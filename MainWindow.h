@@ -49,6 +49,7 @@ private:
     void InitWindowImGui();
 
     void MakeScene();
+    void UpdateScene();
 
     struct ConstantData
     {
@@ -60,7 +61,7 @@ private:
     void CreateVertexBuffer(vector<Vector3> vertices);
     void CreateIndiceBuffer(vector<uint16_t> indices);
     void CreateConstantBuffer(ConstantData constantData);
-
+    
 public:
 
 	HWND m_mainWindow;
@@ -89,4 +90,7 @@ private:
     ComPtr<ID3D11VertexShader> m_vertexShader;
     ComPtr<ID3D11PixelShader> m_pixelShader;
     ComPtr<ID3D11InputLayout> m_inputLayout;
+
+
+    ConstantData m_constantData = {};
 };

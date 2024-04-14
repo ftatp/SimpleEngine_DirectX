@@ -1,18 +1,32 @@
-struct VSInput {
-    float4 position : POSITION;
-    float2 uv : TEXCOORD;
+cbuffer ModelViewProjectionConstantBuffer : register(b0)
+{
+    matrix model;
+    matrix view;
+    matrix projection;
 };
 
-struct VSOutput {
-    float4 position : SV_POSITION;
-    float2 uv : TEXCOORD;
+struct VertexShaderInput
+{
+    float3 pos : POSITION;
 };
 
-VSOutput main(VSInput vsInput) {
-    VSOutput vsOutput;
+struct PixelShaderInput
+{
+    float4 pos : SV_POSITION;
+    float3 color : COLOR;
+};
 
-    vsOutput.position = vsInput.position;
-    vsOutput.uv = vsInput.uv;
+PixelShaderInput main(VertexShaderInput input)
+{
 
-    return vsOutput;
+    PixelShaderInput output;
+    float4 pos = float4(input.pos, 1.0f);
+    pos = mul(pos, model);
+    pos = mul(pos, view);
+    pos = mul(pos, projection);
+
+    output.pos = pos;
+    output.color = float4(1.0, 1.0, 0.2, 1.0);
+
+    return output;
 }
