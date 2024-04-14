@@ -39,37 +39,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
-std::string GetErrorMessageFromHRESULT(HRESULT hr) {
-    LPSTR messageBuffer = nullptr;
-    DWORD dwBufferLength = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-        FORMAT_MESSAGE_FROM_SYSTEM |
-        FORMAT_MESSAGE_IGNORE_INSERTS,
-        nullptr,
-        hr,
-        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        reinterpret_cast<LPSTR>(&messageBuffer),
-        0,
-        nullptr);
-    if (dwBufferLength == 0) {
-        // Failed to retrieve error message
-        return "Unknown error.";
-    }
-
-    // Convert message buffer to string
-    std::string errorMessage(messageBuffer, dwBufferLength);
-
-    // Free the message buffer
-    LocalFree(messageBuffer);
-
-    // Remove trailing newline characters
-    while (!errorMessage.empty() && (errorMessage.back() == '\r' || errorMessage.back() == '\n')) {
-        errorMessage.pop_back();
-    }
-
-    return errorMessage;
-}
-
-
 MainWindow* MainWindow::instancePtr = nullptr;
 
 MainWindow::MainWindow()
@@ -127,12 +96,14 @@ void MainWindow::InitWindowApiProperties()
     InitWindowImGui();
 }
 
-void MainWindow::DisplayWindow()
+void MainWindow::RunWindow()
 {
     MSG message = {};
 
     ShowWindow(m_mainWindow, SW_SHOWDEFAULT);
     UpdateWindow(m_mainWindow);
+
+    MakeScene();
 
     while (message.message != WM_QUIT)
     {
@@ -153,10 +124,16 @@ void MainWindow::DisplayWindow()
         ImGui::Render();
 
         // Rendering
-        m_deviceContext->OMSetRenderTargets(1, &m_renderTargetView, nullptr);
-        m_deviceContext->ClearRenderTargetView(m_renderTargetView, (float*)&clearColor);
+        m_deviceContext->RSSetViewports(1, &m_viewport);
 
-        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+        m_deviceContext->ClearDepthStencilView(
+            m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+        m_deviceContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(),
+            m_depthStencilView.Get());
+        m_deviceContext->ClearRenderTargetView(m_renderTargetView.Get(), (float*)&clearColor);
+
+        auto drawData = ImGui::GetDrawData();
+        ImGui_ImplDX11_RenderDrawData(drawData);
         m_swapChain->Present(1, 0);
     }
 
@@ -165,7 +142,7 @@ void MainWindow::DisplayWindow()
 
 void MainWindow::InitWindowD3D11()
 {
-#pragma region SwapChain
+#pragma region Device&SwapChain
     const D3D_FEATURE_LEVEL featureLevelArray[1] = { D3D_FEATURE_LEVEL_11_0 };
 
     DXGI_SWAP_CHAIN_DESC swapChainDescription;
@@ -186,15 +163,12 @@ void MainWindow::InitWindowD3D11()
     UINT createDeviceFlags = D3D11_CREATE_DEVICE_DEBUG;
 
     HRESULT result = D3D11CreateDeviceAndSwapChain(
-        nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, createDeviceFlags, featureLevelArray, 1, D3D11_SDK_VERSION, &swapChainDescription, //inputs
+        nullptr, D3D_DRIVER_TYPE_HARDWARE, NULL, createDeviceFlags, featureLevelArray, 1, D3D11_SDK_VERSION, &swapChainDescription, //inputs
         &m_swapChain, &m_device, nullptr, &m_deviceContext); //ouputs
 
     if (FAILED(result))
     {
         std::cout << "D3D11CreateDeviceAndSwapChain() error" << std::endl;
-        // Retrieve the DXGI debug interface
-        std::string errorMessage = GetErrorMessageFromHRESULT(result);
-        
         exit(-1);
     }
 #pragma endregion
@@ -218,21 +192,216 @@ void MainWindow::InitWindowD3D11()
 
 #pragma region Viewport
     // Setup viewport
-    D3D11_VIEWPORT viewport;
-    viewport.Width = 1280;
-    viewport.Height = 720;
-    viewport.MinDepth = 0.0f;
-    viewport.MaxDepth = 1.0f;
-    viewport.TopLeftX = 0;
-    viewport.TopLeftY = 0;
-    m_deviceContext->RSSetViewports(1, &viewport);
+    
+    m_viewport.Width = 1280;
+    m_viewport.Height = 720;
+    m_viewport.MinDepth = 0.0f;
+    m_viewport.MaxDepth = 1.0f;
+    m_viewport.TopLeftX = 0;
+    m_viewport.TopLeftY = 0;
+    m_deviceContext->RSSetViewports(1, &m_viewport);
 
+#pragma endregion
+
+#pragma region RasterizerState
+    D3D11_RASTERIZER_DESC rasterizerDesc;
+    ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
+    rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+    rasterizerDesc.CullMode = D3D11_CULL_BACK;
+    rasterizerDesc.FrontCounterClockwise = false;
+    rasterizerDesc.DepthClipEnable = true;
+
+    m_device->CreateRasterizerState(&rasterizerDesc, &m_rasterizerState);
+#pragma endregion
+
+#pragma region DepthBuffer
+    D3D11_TEXTURE2D_DESC depthStencilBufferDesc;
+    ZeroMemory(&depthStencilBufferDesc, sizeof(D3D11_TEXTURE2D_DESC));
+    depthStencilBufferDesc.Width = m_windowWidth;
+    depthStencilBufferDesc.Height = m_windowHeight;
+    depthStencilBufferDesc.MipLevels = 1;
+    depthStencilBufferDesc.ArraySize = 1;
+    depthStencilBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    depthStencilBufferDesc.SampleDesc.Count = 1;
+    depthStencilBufferDesc.SampleDesc.Quality = 0;
+    depthStencilBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    depthStencilBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+    depthStencilBufferDesc.CPUAccessFlags = 0;
+    depthStencilBufferDesc.MiscFlags = 0;
+
+    if (FAILED(m_device->CreateTexture2D(&depthStencilBufferDesc, 0, m_depthStencilBuffer.GetAddressOf()))) 
+    {
+        cout << "CreateTexture2D() failed." << endl;
+    }
+
+    if (FAILED(m_device->CreateDepthStencilView(m_depthStencilBuffer.Get(), 0, &m_depthStencilView))) 
+    {
+        cout << "CreateDepthStencilView() failed." << endl;
+    }
+
+    D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
+    ZeroMemory(&depthStencilDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+    depthStencilDesc.DepthEnable = true; // false
+    depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK::D3D11_DEPTH_WRITE_MASK_ALL;
+    depthStencilDesc.DepthFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_LESS_EQUAL;
+
+    if (FAILED(m_device->CreateDepthStencilState(&depthStencilDesc,
+        m_depthStencilState.GetAddressOf()))) {
+        cout << "CreateDepthStencilState() failed." << endl;
+    }
 #pragma endregion
 }
 
 void MainWindow::InitWindowImGui()
 {
     ImGui::CreateContext();
-    ImGui_ImplDX11_Init(m_device, m_deviceContext);
+    ImGui_ImplDX11_Init(m_device.Get(), m_deviceContext.Get());
     ImGui_ImplWin32_Init(m_mainWindow);
+}
+
+struct MeshData
+{
+    vector<Vector3> vertices;
+    vector<uint16_t> indices;
+};
+
+shared_ptr<MeshData> MakeTriangle()
+{
+    shared_ptr<MeshData> triangleMeshData = make_shared<MeshData>();
+
+    triangleMeshData->vertices.push_back({-1.0, -1.0, 0.0});
+    triangleMeshData->vertices.push_back({ 1.0, -1.0, 0.0 });
+    triangleMeshData->vertices.push_back({ 0.0, 1.0, 0.0 });
+
+    triangleMeshData->indices.push_back(0);
+    triangleMeshData->indices.push_back(1);
+    triangleMeshData->indices.push_back(2);
+
+    return triangleMeshData;
+}
+
+void MainWindow::CreateVertexBuffer(vector<Vector3> vertices)
+{
+    D3D11_BUFFER_DESC vertexBufferDesc;
+    ZeroMemory(&vertexBufferDesc, sizeof(D3D11_BUFFER_DESC));
+    vertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+    vertexBufferDesc.ByteWidth = UINT(sizeof(Vector3) * vertices.size());
+    vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    vertexBufferDesc.CPUAccessFlags = 0;
+    vertexBufferDesc.StructureByteStride = UINT(sizeof(Vector3));
+
+    D3D11_SUBRESOURCE_DATA vertexBufferSubresource;
+    ZeroMemory(&vertexBufferSubresource, sizeof(D3D11_SUBRESOURCE_DATA));
+    vertexBufferSubresource.pSysMem = vertices.data();
+
+    const HRESULT isVertexBufferCreated =
+        m_device->CreateBuffer(&vertexBufferDesc, &vertexBufferSubresource, &m_vertexBuffer);
+
+    if (FAILED(isVertexBufferCreated)) {
+        std::cout << __FUNCTION__ << "failed. " << std::hex << isVertexBufferCreated << std::endl;
+    };
+}
+
+void MainWindow::CreateIndiceBuffer(vector<uint16_t> indices)
+{
+    D3D11_BUFFER_DESC indexBufferDesc;
+    ZeroMemory(&indexBufferDesc, sizeof(D3D11_BUFFER_DESC));
+    indexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+    indexBufferDesc.ByteWidth = UINT(sizeof(uint16_t) * indices.size());
+    indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    indexBufferDesc.CPUAccessFlags = 0;
+    indexBufferDesc.StructureByteStride = UINT(sizeof(uint16_t));
+
+    D3D11_SUBRESOURCE_DATA indexBufferSubresource;
+    ZeroMemory(&indexBufferSubresource, sizeof(D3D11_SUBRESOURCE_DATA));
+    indexBufferSubresource.pSysMem = indices.data();
+
+    const HRESULT isIndexBufferCreated =
+        m_device->CreateBuffer(&indexBufferDesc, &indexBufferSubresource, &m_indexBuffer);
+
+    if (FAILED(isIndexBufferCreated)) {
+        std::cout << __FUNCTION__ << "failed. " << std::hex << isIndexBufferCreated << std::endl;
+    };
+}
+
+void MainWindow::CreateConstantBuffer(ConstantData constantData)
+{
+    D3D11_BUFFER_DESC constantBufferDesc;
+    ZeroMemory(&constantBufferDesc, sizeof(D3D11_BUFFER_DESC));
+    constantBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+    constantBufferDesc.ByteWidth = sizeof(constantData);
+    constantBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    constantBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    constantBufferDesc.MiscFlags = 0;
+    constantBufferDesc.StructureByteStride = 0;
+
+    D3D11_SUBRESOURCE_DATA constantBufferSubresource;
+    ZeroMemory(&constantBufferSubresource, sizeof(D3D11_SUBRESOURCE_DATA));
+    constantBufferSubresource.pSysMem = &constantBufferDesc;
+
+    const HRESULT isConstantxBufferCreated =
+        m_device->CreateBuffer(&constantBufferDesc, &constantBufferSubresource, &m_constantBuffer);
+
+    if (FAILED(isConstantxBufferCreated)) {
+        std::cout << __FUNCTION__ << "failed. " << std::hex << isConstantxBufferCreated << std::endl;
+    };
+}
+
+void MainWindow::MakeScene()
+{
+    shared_ptr<MeshData> exampleTriangle = MakeTriangle();
+
+    ConstantData constantData = {};
+    constantData.model = Matrix();
+    constantData.view = Matrix();
+    constantData.projection = Matrix();
+
+    CreateVertexBuffer(exampleTriangle->vertices);
+    CreateIndiceBuffer(exampleTriangle->indices);
+    CreateConstantBuffer(constantData);
+
+    vector<D3D11_INPUT_ELEMENT_DESC> inputLayoutElements = {
+        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+    };
+
+    ComPtr<ID3DBlob> shaderBlob;
+    ComPtr<ID3DBlob> errorBlob;
+
+    HRESULT isVertexShaderCompiled = 
+        D3DCompileFromFile(L"VertexShader.hlsl", 0, 0, "main", "vs_5_0", 0, 0, &shaderBlob, &errorBlob);
+
+    if (FAILED(isVertexShaderCompiled)) {
+        // 파일이 없을 경우
+        if ((isVertexShaderCompiled & D3D11_ERROR_FILE_NOT_FOUND) != 0) {
+            cout << "File not found." << endl;
+        }
+
+        // 에러 메시지가 있으면 출력
+        if (errorBlob) {
+            cout << "Shader compile error\n" << (char*)errorBlob->GetBufferPointer() << endl;
+        }
+    }
+
+    m_device->CreateVertexShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), 
+        nullptr, &m_vertexShader);
+    m_device->CreateInputLayout(inputLayoutElements.data(), UINT(inputLayoutElements.size()), 
+        shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), &m_inputLayout);
+
+    HRESULT isPixelShaderCompiled =
+        D3DCompileFromFile(L"PixelShader.hlsl", 0, 0, "main", "ps_5_0", 0, 0, &shaderBlob, &errorBlob);
+
+    if (FAILED(isPixelShaderCompiled)) {
+        // 파일이 없을 경우
+        if ((isPixelShaderCompiled & D3D11_ERROR_FILE_NOT_FOUND) != 0) {
+            cout << "File not found." << endl;
+        }
+
+        // 에러 메시지가 있으면 출력
+        if (errorBlob) {
+            cout << "Shader compile error\n" << (char*)errorBlob->GetBufferPointer() << endl;
+        }
+    }
+
+    m_device->CreatePixelShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(),
+        nullptr, &m_pixelShader);
 }
