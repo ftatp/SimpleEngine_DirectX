@@ -41,7 +41,9 @@ public:
 	void MakeWindow();
     void InitWindowApiProperties();
     void RunWindow();
-	
+    ComPtr<ID3D11Device> GetDevice();
+    
+
 private:
 	MainWindow& operator=(const MainWindow&) = delete;
 

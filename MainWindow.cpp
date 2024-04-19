@@ -154,6 +154,11 @@ void MainWindow::RunWindow()
     delete this;
 }
 
+ComPtr<ID3D11Device> MainWindow::GetDevice()
+{
+    return m_device;
+}
+
 void MainWindow::InitWindowD3D11()
 {
 #pragma region Device&SwapChain
