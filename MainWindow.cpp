@@ -258,6 +258,8 @@ void MainWindow::InitWindowImGui()
 void MainWindow::MakeScene()
 {
     ObjectManager::GetInstance()->MakeObject();
+    ObjectManager::GetInstance()->MakeObject();
+    ObjectManager::GetInstance()->SetObjectTranslation(1, Matrix::CreateTranslation(Vector3(1.0f, 0.0f, 0.0f)));
 }
 
 void MainWindow::UpdateScene()
@@ -266,12 +268,12 @@ void MainWindow::UpdateScene()
 
     for (int i = 0; i < objects.size(); i++)
     {
-        auto constantData = objects[i]->GetConstantData();
+        ConstantData constantData = {};
 
-        constantData.model =
-            Matrix::CreateScale(Vector3(1.0f)) * Matrix::CreateRotationX(0.0f) *
-            Matrix::CreateRotationY(0.0f) * Matrix::CreateRotationZ(0.0f) *
-            Matrix::CreateTranslation(Vector3(0.0f));
+        constantData.model = objects[i]->GetModelTransform();
+            //Matrix::CreateScale(Vector3(1.0f)) * Matrix::CreateRotationX(0.0f) *
+            //Matrix::CreateRotationY(0.0f) * Matrix::CreateRotationZ(0.0f) *
+            //Matrix::CreateTranslation(Vector3(0.0f));
         constantData.model = constantData.model.Transpose();
 
         constantData.view = DirectX::XMMatrixLookToLH({ 0.0f, 0.0f, -2.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f });

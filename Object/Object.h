@@ -24,7 +24,11 @@ namespace object
 		void SetMesh(shared_ptr<Mesh> mesh);
 		void SetVertexShader(LPCWSTR vertexShaderFile);
 		void SetPixelShader(LPCWSTR pixelShaderFile);
+		
 		Matrix GetModelTransform();
+		void SetTranslation(Matrix translation);
+		void SetRotation(Matrix rotation);
+		void SetScale(Matrix scale);
 		ConstantData GetConstantData();
 		void SetConstantData(ConstantData constantData);
 

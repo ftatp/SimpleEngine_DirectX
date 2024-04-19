@@ -25,7 +25,12 @@ using namespace std;
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-
+//struct ConstantData
+//{
+//    Matrix model;
+//    Matrix view;
+//    Matrix projection;
+//};
 
 class MainWindow
 {
@@ -59,10 +64,6 @@ private:
     void UpdateScene();
     void RenderScene();
 
-    //void CreateVertexBuffer(vector<Vector3> vertices);
-    //void CreateIndiceBuffer(vector<uint16_t> indices);
-    //void CreateConstantBuffer(ConstantData constantData);
-
 public:
 
 	HWND m_mainWindow;
@@ -83,15 +84,4 @@ private:
     ComPtr<ID3D11DepthStencilState> m_depthStencilState;
 
     D3D11_VIEWPORT m_viewport;
-
-    //ComPtr<ID3D11Buffer> m_vertexBuffer;
-    //ComPtr<ID3D11Buffer> m_indexBuffer;
-    //ComPtr<ID3D11Buffer> m_constantBuffer;
-
-    //ComPtr<ID3D11VertexShader> m_vertexShader;
-    //ComPtr<ID3D11PixelShader> m_pixelShader;
-    //ComPtr<ID3D11InputLayout> m_inputLayout;
-
-
-    //ConstantData m_constantData = {};
 };

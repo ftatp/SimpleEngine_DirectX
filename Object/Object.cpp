@@ -55,6 +55,21 @@ namespace object
         return m_scale * m_rotation * m_translation;
     }
 
+    void Object::SetTranslation(Matrix translation)
+    {
+        m_translation = translation;
+    }
+
+    void Object::SetRotation(Matrix rotation)
+    {
+        m_rotation = rotation;
+    }
+    
+    void Object::SetScale(Matrix scale) 
+    {
+        m_scale = scale;
+    }
+
     ConstantData Object::GetConstantData()
     {
         return m_constantData;

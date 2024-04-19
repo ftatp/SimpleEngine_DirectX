@@ -24,6 +24,10 @@ public:
 	void MakeObject();
 	vector<shared_ptr<object::Object>> GetObjectList();
 
+	void SetObjectTranslation(int objectIndex, Matrix translation);
+	void SetObjectRotation(int objectIndex, Matrix rotation);
+	void SetObjectScale(int objectIndex, Matrix scale);
+
 private:
 	static ObjectManager* m_instancePtr;
 
