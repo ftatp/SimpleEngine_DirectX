@@ -1,7 +1,9 @@
 #include "MainWindow.h"
+#include "Object/GeometryConstructor.h"
 
 #include <iostream>
 
+using namespace object;
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -39,7 +41,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
-MainWindow* MainWindow::instancePtr = nullptr;
+MainWindow* MainWindow::m_instancePtr = nullptr;
 
 MainWindow::MainWindow()
 {
@@ -89,7 +91,6 @@ void MainWindow::MakeWindow()
     return;
 }
 
-
 void MainWindow::InitWindowApiProperties()
 {
     InitWindowD3D11();
@@ -124,31 +125,7 @@ void MainWindow::RunWindow()
         ImGui::Render();
 
         UpdateScene();
-
-        // Rendering
-        m_deviceContext->RSSetViewports(1, &m_viewport);
-
-        m_deviceContext->ClearRenderTargetView(m_renderTargetView.Get(), (float*)&clearColor);
-        m_deviceContext->ClearDepthStencilView(
-            m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-        m_deviceContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(),
-            m_depthStencilView.Get());
-        m_deviceContext->OMSetDepthStencilState(m_depthStencilState.Get(), 0);
-        m_deviceContext->VSSetShader(m_vertexShader.Get(), 0, 0);
-        m_deviceContext->VSSetConstantBuffers(0, 1, m_constantBuffer.GetAddressOf());
-        m_deviceContext->RSSetState(m_rasterizerState.Get());
-        m_deviceContext->PSSetShader(m_pixelShader.Get(), 0, 0);
-
-        UINT stride = sizeof(Vector3);
-        UINT offset = 0;
-        m_deviceContext->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddressOf(), &stride, &offset);
-        m_deviceContext->IASetInputLayout(m_inputLayout.Get());
-        m_deviceContext->IASetIndexBuffer(m_indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
-        m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        m_deviceContext->DrawIndexed(3, 0, 0);
-
-        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-        m_swapChain->Present(1, 0);
+        RenderScene();
     }
 
     delete this;
@@ -278,170 +255,81 @@ void MainWindow::InitWindowImGui()
     ImGui_ImplWin32_Init(m_mainWindow);
 }
 
-struct MeshData
-{
-    vector<Vector3> vertices;
-    vector<uint16_t> indices;
-};
-
-shared_ptr<MeshData> MakeTriangle()
-{
-    shared_ptr<MeshData> triangleMeshData = make_shared<MeshData>();
-
-    triangleMeshData->vertices.push_back({-1.0, -1.0, 0.0});
-    triangleMeshData->vertices.push_back({ 0.0, 1.0, 0.0 });
-    triangleMeshData->vertices.push_back({ 1.0, -1.0, 0.0 });
-
-    triangleMeshData->indices.push_back(0);
-    triangleMeshData->indices.push_back(1);
-    triangleMeshData->indices.push_back(2);
-
-    return triangleMeshData;
-}
-
-void MainWindow::CreateVertexBuffer(vector<Vector3> vertices)
-{
-    D3D11_BUFFER_DESC vertexBufferDesc;
-    ZeroMemory(&vertexBufferDesc, sizeof(D3D11_BUFFER_DESC));
-    vertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-    vertexBufferDesc.ByteWidth = UINT(sizeof(Vector3) * vertices.size());
-    vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    vertexBufferDesc.CPUAccessFlags = 0;
-    vertexBufferDesc.StructureByteStride = UINT(sizeof(Vector3));
-
-    D3D11_SUBRESOURCE_DATA vertexBufferSubresource;
-    ZeroMemory(&vertexBufferSubresource, sizeof(D3D11_SUBRESOURCE_DATA));
-    vertexBufferSubresource.pSysMem = vertices.data();
-
-    const HRESULT isVertexBufferCreated =
-        m_device->CreateBuffer(&vertexBufferDesc, &vertexBufferSubresource, m_vertexBuffer.GetAddressOf());
-
-    if (FAILED(isVertexBufferCreated)) {
-        std::cout << __FUNCTION__ << "failed. " << std::hex << isVertexBufferCreated << std::endl;
-    };
-}
-
-void MainWindow::CreateIndiceBuffer(vector<uint16_t> indices)
-{
-    D3D11_BUFFER_DESC indexBufferDesc;
-    ZeroMemory(&indexBufferDesc, sizeof(D3D11_BUFFER_DESC));
-    indexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-    indexBufferDesc.ByteWidth = UINT(sizeof(uint16_t) * indices.size());
-    indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-    indexBufferDesc.CPUAccessFlags = 0;
-    indexBufferDesc.StructureByteStride = UINT(sizeof(uint16_t));
-
-    D3D11_SUBRESOURCE_DATA indexBufferSubresource;
-    ZeroMemory(&indexBufferSubresource, sizeof(D3D11_SUBRESOURCE_DATA));
-    indexBufferSubresource.pSysMem = indices.data();
-
-    const HRESULT isIndexBufferCreated =
-        m_device->CreateBuffer(&indexBufferDesc, &indexBufferSubresource, m_indexBuffer.GetAddressOf());
-
-    if (FAILED(isIndexBufferCreated)) {
-        std::cout << __FUNCTION__ << "failed. " << std::hex << isIndexBufferCreated << std::endl;
-    };
-}
-
-void MainWindow::CreateConstantBuffer(ConstantData constantData)
-{
-    D3D11_BUFFER_DESC constantBufferDesc;
-    ZeroMemory(&constantBufferDesc, sizeof(D3D11_BUFFER_DESC));
-    constantBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-    constantBufferDesc.ByteWidth = sizeof(constantData);
-    constantBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-    constantBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    constantBufferDesc.MiscFlags = 0;
-    constantBufferDesc.StructureByteStride = 0;
-
-    D3D11_SUBRESOURCE_DATA constantBufferSubresource;
-    ZeroMemory(&constantBufferSubresource, sizeof(D3D11_SUBRESOURCE_DATA));
-    constantBufferSubresource.pSysMem = &constantBufferDesc;
-
-    const HRESULT isConstantxBufferCreated =
-        m_device->CreateBuffer(&constantBufferDesc, &constantBufferSubresource, m_constantBuffer.GetAddressOf());
-
-    if (FAILED(isConstantxBufferCreated)) {
-        std::cout << __FUNCTION__ << "failed. " << std::hex << isConstantxBufferCreated << std::endl;
-    };
-}
-
 void MainWindow::MakeScene()
 {
-    shared_ptr<MeshData> exampleTriangle = MakeTriangle();
-
-    m_constantData.model = Matrix();
-    m_constantData.view = Matrix();
-    m_constantData.projection = Matrix();
-
-    CreateVertexBuffer(exampleTriangle->vertices);
-    CreateIndiceBuffer(exampleTriangle->indices);
-    CreateConstantBuffer(m_constantData);
-
-    vector<D3D11_INPUT_ELEMENT_DESC> inputLayoutElements = {
-        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-    };
-
-    ComPtr<ID3DBlob> shaderBlob;
-    ComPtr<ID3DBlob> errorBlob;
-
-    HRESULT isVertexShaderCompiled = 
-        D3DCompileFromFile(L"VertexShader.hlsl", 0, 0, "main", "vs_5_0", 0, 0, &shaderBlob, &errorBlob);
-
-    if (FAILED(isVertexShaderCompiled)) {
-        // 파일이 없을 경우
-        if ((isVertexShaderCompiled & D3D11_ERROR_FILE_NOT_FOUND) != 0) {
-            cout << "File not found." << endl;
-        }
-
-        // 에러 메시지가 있으면 출력
-        if (errorBlob) {
-            cout << "Shader compile error\n" << (char*)errorBlob->GetBufferPointer() << endl;
-        }
-    }
-
-    m_device->CreateVertexShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), 
-        nullptr, &m_vertexShader);
-    m_device->CreateInputLayout(inputLayoutElements.data(), UINT(inputLayoutElements.size()), 
-        shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), &m_inputLayout);
-
-    HRESULT isPixelShaderCompiled =
-        D3DCompileFromFile(L"PixelShader.hlsl", 0, 0, "main", "ps_5_0", 0, 0, &shaderBlob, &errorBlob);
-
-    if (FAILED(isPixelShaderCompiled)) {
-        // 파일이 없을 경우
-        if ((isPixelShaderCompiled & D3D11_ERROR_FILE_NOT_FOUND) != 0) {
-            cout << "File not found." << endl;
-        }
-
-        // 에러 메시지가 있으면 출력
-        if (errorBlob) {
-            cout << "Shader compile error\n" << (char*)errorBlob->GetBufferPointer() << endl;
-        }
-    }
-
-    m_device->CreatePixelShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(),
-        nullptr, &m_pixelShader);
+    ObjectManager::GetInstance()->MakeObject();
 }
 
 void MainWindow::UpdateScene()
 {
-    m_constantData.model =
-        Matrix::CreateScale(Vector3(1.0f)) * Matrix::CreateRotationX(0.0f) *
-        Matrix::CreateRotationY(0.0f) * Matrix::CreateRotationZ(0.0f) *
-        Matrix::CreateTranslation(Vector3(0.0f));
-    m_constantData.model = m_constantData.model.Transpose();
+    auto objects = ObjectManager::GetInstance()->GetObjectList();
 
-    m_constantData.view = DirectX::XMMatrixLookToLH({ 0.0f, 0.0f, -2.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f });
-    m_constantData.view = m_constantData.view.Transpose();
+    for (int i = 0; i < objects.size(); i++)
+    {
+        auto constantData = objects[i]->GetConstantData();
 
-    m_constantData.projection = DirectX::XMMatrixPerspectiveFovLH(
-        DirectX::XMConvertToRadians(70.0f), float(m_windowWidth) / m_windowHeight, 0.5f, 100.0f);
+        constantData.model =
+            Matrix::CreateScale(Vector3(1.0f)) * Matrix::CreateRotationX(0.0f) *
+            Matrix::CreateRotationY(0.0f) * Matrix::CreateRotationZ(0.0f) *
+            Matrix::CreateTranslation(Vector3(0.0f));
+        constantData.model = constantData.model.Transpose();
 
-    m_constantData.projection = m_constantData.projection.Transpose();
+        constantData.view = DirectX::XMMatrixLookToLH({ 0.0f, 0.0f, -2.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f });
+        constantData.view = constantData.view.Transpose();
 
-    D3D11_MAPPED_SUBRESOURCE ms;
-    m_deviceContext->Map(m_constantBuffer.Get(), NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
-    memcpy(ms.pData, &m_constantData, sizeof(m_constantData));
-    m_deviceContext->Unmap(m_constantBuffer.Get(), NULL);
+        constantData.projection = DirectX::XMMatrixPerspectiveFovLH(
+            DirectX::XMConvertToRadians(70.0f), float(m_windowWidth) / m_windowHeight, 0.5f, 100.0f);
+
+        constantData.projection = constantData.projection.Transpose();
+
+        objects[i]->SetConstantData(constantData);
+    }
+}
+
+void MainWindow::RenderScene()
+{
+    m_deviceContext->ClearRenderTargetView(m_renderTargetView.Get(), (float*)&clearColor);
+    m_deviceContext->ClearDepthStencilView(
+        m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+    UINT stride = sizeof(Vector3);
+    UINT offset = 0;
+    m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    m_deviceContext->RSSetViewports(1, &m_viewport);
+    m_deviceContext->RSSetState(m_rasterizerState.Get());
+    
+    m_deviceContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get());
+    m_deviceContext->OMSetDepthStencilState(m_depthStencilState.Get(), 0);
+
+    auto objects = ObjectManager::GetInstance()->GetObjectList();
+
+    for (int i = 0; i < objects.size(); i++)
+    {
+        auto vertexBuffer   = objects[i]->GetVertexBuffer();
+        auto inputLayout    = objects[i]->GetInputLayout();
+        auto indexBuffer    = objects[i]->GetIndexBuffer();
+        auto vertexShader   = objects[i]->GetVertexShader();
+        auto constantBuffer = objects[i]->GetConstantBuffer();
+        auto pixelShader    = objects[i]->GetPixelShader();
+        
+        auto constantData = objects[i]->GetConstantData();
+
+        D3D11_MAPPED_SUBRESOURCE ms;
+        m_deviceContext->Map(constantBuffer.Get(), NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
+        memcpy(ms.pData, &constantData, sizeof(constantData));
+        m_deviceContext->Unmap(constantBuffer.Get(), NULL);
+
+        m_deviceContext->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
+        m_deviceContext->IASetInputLayout(inputLayout.Get());
+        m_deviceContext->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
+
+        m_deviceContext->VSSetShader(vertexShader.Get(), 0, 0);
+        m_deviceContext->VSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
+        m_deviceContext->PSSetShader(pixelShader.Get(), 0, 0);
+
+        m_deviceContext->DrawIndexed(3, 0, 0);
+    }
+
+    ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+    m_swapChain->Present(1, 0);
 }

@@ -107,7 +107,8 @@ namespace object
 
         D3D11_SUBRESOURCE_DATA vertexBufferSubresource;
         ZeroMemory(&vertexBufferSubresource, sizeof(D3D11_SUBRESOURCE_DATA));
-        vertexBufferSubresource.pSysMem = m_mesh->GetVertices().data();
+        auto vertices = m_mesh->GetVertices();
+        vertexBufferSubresource.pSysMem = vertices.data();
 
         const HRESULT isVertexBufferCreated =
             MainWindow::GetInstance()->GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexBufferSubresource, m_vertexBuffer.GetAddressOf());
@@ -129,7 +130,8 @@ namespace object
 
         D3D11_SUBRESOURCE_DATA indexBufferSubresource;
         ZeroMemory(&indexBufferSubresource, sizeof(D3D11_SUBRESOURCE_DATA));
-        indexBufferSubresource.pSysMem = m_mesh->GetIndices().data();
+        auto indices = m_mesh->GetIndices();
+        indexBufferSubresource.pSysMem = indices.data();
 
         const HRESULT isIndexBufferCreated =
             MainWindow::GetInstance()->GetDevice()->CreateBuffer(&indexBufferDesc, &indexBufferSubresource, m_indexBuffer.GetAddressOf());

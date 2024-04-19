@@ -1,4 +1,7 @@
 #pragma once
+
+#include "ObjectManager.h"
+
 #include <imgui.h>
 #include <imgui_impl_dx11.h>
 #include <imgui_impl_win32.h>
@@ -22,17 +25,19 @@ using namespace std;
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
+
+
 class MainWindow
 {
 public:
     static MainWindow* GetInstance()
     {
-        if (instancePtr == nullptr)
+        if (m_instancePtr == nullptr)
         {
-            instancePtr = new MainWindow();
+            m_instancePtr = new MainWindow();
         }
 
-        return instancePtr;
+        return m_instancePtr;
     }
 	
 	MainWindow();
@@ -41,8 +46,8 @@ public:
 	void MakeWindow();
     void InitWindowApiProperties();
     void RunWindow();
+
     ComPtr<ID3D11Device> GetDevice();
-    
 
 private:
 	MainWindow& operator=(const MainWindow&) = delete;
@@ -52,18 +57,12 @@ private:
 
     void MakeScene();
     void UpdateScene();
+    void RenderScene();
 
-    struct ConstantData
-    {
-        Matrix model;
-        Matrix view;
-        Matrix projection;
-    };
+    //void CreateVertexBuffer(vector<Vector3> vertices);
+    //void CreateIndiceBuffer(vector<uint16_t> indices);
+    //void CreateConstantBuffer(ConstantData constantData);
 
-    void CreateVertexBuffer(vector<Vector3> vertices);
-    void CreateIndiceBuffer(vector<uint16_t> indices);
-    void CreateConstantBuffer(ConstantData constantData);
-    
 public:
 
 	HWND m_mainWindow;
@@ -72,7 +71,7 @@ public:
     const float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 private:
-    static MainWindow* instancePtr;
+    static MainWindow* m_instancePtr;
 
     ComPtr<IDXGISwapChain> m_swapChain;                  // Made by D3D11CreateDeviceAndSwapChain()
     ComPtr<ID3D11Device> m_device;                       // Made by D3D11CreateDeviceAndSwapChain()
@@ -85,14 +84,14 @@ private:
 
     D3D11_VIEWPORT m_viewport;
 
-    ComPtr<ID3D11Buffer> m_vertexBuffer;
-    ComPtr<ID3D11Buffer> m_indexBuffer;
-    ComPtr<ID3D11Buffer> m_constantBuffer;
+    //ComPtr<ID3D11Buffer> m_vertexBuffer;
+    //ComPtr<ID3D11Buffer> m_indexBuffer;
+    //ComPtr<ID3D11Buffer> m_constantBuffer;
 
-    ComPtr<ID3D11VertexShader> m_vertexShader;
-    ComPtr<ID3D11PixelShader> m_pixelShader;
-    ComPtr<ID3D11InputLayout> m_inputLayout;
+    //ComPtr<ID3D11VertexShader> m_vertexShader;
+    //ComPtr<ID3D11PixelShader> m_pixelShader;
+    //ComPtr<ID3D11InputLayout> m_inputLayout;
 
 
-    ConstantData m_constantData = {};
+    //ConstantData m_constantData = {};
 };
