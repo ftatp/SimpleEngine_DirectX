@@ -1,10 +1,10 @@
-#include "MainWindow.h"
+#include "WindowManager.h"
 
 int main()
 {
-    MainWindow::GetInstance()->MakeWindow();
-    MainWindow::GetInstance()->InitWindowApiProperties();
-    MainWindow::GetInstance()->RunWindow();
+    WindowManager::GetInstance()->MakeWindow();
+    WindowManager::GetInstance()->InitWindowApiProperties();
+    WindowManager::GetInstance()->RunWindow();
 
     return 0;
 }

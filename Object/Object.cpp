@@ -1,5 +1,5 @@
 #include "Object.h"
-#include "../MainWindow.h"
+#include "../WindowManager.h"
 
 #include <iostream>
 
@@ -68,7 +68,7 @@ namespace object
     void Object::SetScale(Matrix scale) 
     {
         m_scale = scale;
-    }
+    } 
 
     ConstantData Object::GetConstantData()
     {
@@ -126,7 +126,7 @@ namespace object
         vertexBufferSubresource.pSysMem = vertices.data();
 
         const HRESULT isVertexBufferCreated =
-            MainWindow::GetInstance()->GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexBufferSubresource, m_vertexBuffer.GetAddressOf());
+            WindowManager::GetInstance()->GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexBufferSubresource, m_vertexBuffer.GetAddressOf());
 
         if (FAILED(isVertexBufferCreated)) {
             std::cout << __FUNCTION__ << "failed. " << std::hex << isVertexBufferCreated << std::endl;
@@ -149,7 +149,7 @@ namespace object
         indexBufferSubresource.pSysMem = indices.data();
 
         const HRESULT isIndexBufferCreated =
-            MainWindow::GetInstance()->GetDevice()->CreateBuffer(&indexBufferDesc, &indexBufferSubresource, m_indexBuffer.GetAddressOf());
+            WindowManager::GetInstance()->GetDevice()->CreateBuffer(&indexBufferDesc, &indexBufferSubresource, m_indexBuffer.GetAddressOf());
 
         if (FAILED(isIndexBufferCreated)) {
             std::cout << __FUNCTION__ << "failed. " << std::hex << isIndexBufferCreated << std::endl;
@@ -172,7 +172,7 @@ namespace object
         constantBufferSubresource.pSysMem = &constantBufferDesc;
 
         const HRESULT isConstantxBufferCreated =
-            MainWindow::GetInstance()->GetDevice()->CreateBuffer(&constantBufferDesc, &constantBufferSubresource, m_constantBuffer.GetAddressOf());
+            WindowManager::GetInstance()->GetDevice()->CreateBuffer(&constantBufferDesc, &constantBufferSubresource, m_constantBuffer.GetAddressOf());
 
         if (FAILED(isConstantxBufferCreated)) {
             std::cout << __FUNCTION__ << "failed. " << std::hex << isConstantxBufferCreated << std::endl;
@@ -200,7 +200,7 @@ namespace object
             }
         }
 
-        MainWindow::GetInstance()->GetDevice()->CreateVertexShader(
+        WindowManager::GetInstance()->GetDevice()->CreateVertexShader(
             shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(),
             nullptr, &m_vertexShader);
 
@@ -208,7 +208,7 @@ namespace object
             {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
         };
 
-        MainWindow::GetInstance()->GetDevice()->CreateInputLayout(
+        WindowManager::GetInstance()->GetDevice()->CreateInputLayout(
             inputLayoutElements.data(), UINT(inputLayoutElements.size()),
             shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), &m_inputLayout);
 
@@ -234,7 +234,7 @@ namespace object
             }
         }
 
-        MainWindow::GetInstance()->GetDevice()->CreatePixelShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(),
+        WindowManager::GetInstance()->GetDevice()->CreatePixelShader(shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(),
             nullptr, &m_pixelShader);
     }
 }

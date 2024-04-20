@@ -1,4 +1,4 @@
-#include "MainWindow.h"
+#include "WindowManager.h"
 #include "Object/GeometryConstructor.h"
 
 #include <iostream>
@@ -41,15 +41,15 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
-MainWindow* MainWindow::m_instancePtr = nullptr;
+WindowManager* WindowManager::m_instancePtr = nullptr;
 
-MainWindow::MainWindow()
+WindowManager::WindowManager()
 {
 	m_windowWidth = 1280;
 	m_windowHeight = 960;
 }
 
-MainWindow::~MainWindow()
+WindowManager::~WindowManager()
 {
     ImGui_ImplDX11_Shutdown();
     ImGui_ImplWin32_Shutdown();
@@ -62,7 +62,7 @@ MainWindow::~MainWindow()
     DestroyWindow(m_mainWindow);
 }
 
-void MainWindow::MakeWindow()
+void WindowManager::MakeWindow()
 {
     WNDCLASSEX wndClass = {
         sizeof(WNDCLASSEX),
@@ -91,13 +91,13 @@ void MainWindow::MakeWindow()
     return;
 }
 
-void MainWindow::InitWindowApiProperties()
+void WindowManager::InitWindowApiProperties()
 {
     InitWindowD3D11();
     InitWindowImGui();
 }
 
-void MainWindow::RunWindow()
+void WindowManager::RunWindow()
 {
     MSG message = {};
 
@@ -121,6 +121,10 @@ void MainWindow::RunWindow()
 
         ImGui::Begin("Hello, ImGui!");
         ImGui::Text("This is some text");
+        if (ImGui::Button("Add Object"))
+        {
+
+        }
         ImGui::End();
         ImGui::Render();
 
@@ -131,12 +135,12 @@ void MainWindow::RunWindow()
     delete this;
 }
 
-ComPtr<ID3D11Device> MainWindow::GetDevice()
+ComPtr<ID3D11Device> WindowManager::GetDevice()
 {
     return m_device;
 }
 
-void MainWindow::InitWindowD3D11()
+void WindowManager::InitWindowD3D11()
 {
 #pragma region Device&SwapChain
     const D3D_FEATURE_LEVEL featureLevelArray[1] = { D3D_FEATURE_LEVEL_11_0 };
@@ -248,21 +252,21 @@ void MainWindow::InitWindowD3D11()
 #pragma endregion
 }
 
-void MainWindow::InitWindowImGui()
+void WindowManager::InitWindowImGui()
 {
     ImGui::CreateContext();
     ImGui_ImplDX11_Init(m_device.Get(), m_deviceContext.Get());
     ImGui_ImplWin32_Init(m_mainWindow);
 }
 
-void MainWindow::MakeScene()
+void WindowManager::MakeScene()
 {
     ObjectManager::GetInstance()->MakeObject();
     ObjectManager::GetInstance()->MakeObject();
     ObjectManager::GetInstance()->SetObjectTranslation(1, Matrix::CreateTranslation(Vector3(1.0f, 0.0f, 0.0f)));
 }
 
-void MainWindow::UpdateScene()
+void WindowManager::UpdateScene()
 {
     auto objects = ObjectManager::GetInstance()->GetObjectList();
 
@@ -288,7 +292,7 @@ void MainWindow::UpdateScene()
     }
 }
 
-void MainWindow::RenderScene()
+void WindowManager::RenderScene()
 {
     m_deviceContext->ClearRenderTargetView(m_renderTargetView.Get(), (float*)&clearColor);
     m_deviceContext->ClearDepthStencilView(

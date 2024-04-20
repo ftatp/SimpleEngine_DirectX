@@ -141,14 +141,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MainWindow.cpp" />
+    <ClCompile Include="WindowManager.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="Object\GeometryConstructor.cpp" />
     <ClCompile Include="Object\Mesh.cpp" />
     <ClCompile Include="Object\Object.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MainWindow.h" />
+    <ClInclude Include="WindowManager.h" />
     <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="Object\GeometryConstructor.h" />
     <ClInclude Include="Object\Mesh.h" />

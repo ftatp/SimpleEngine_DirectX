@@ -32,21 +32,21 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 //    Matrix projection;
 //};
 
-class MainWindow
+class WindowManager
 {
 public:
-    static MainWindow* GetInstance()
+    static WindowManager* GetInstance()
     {
         if (m_instancePtr == nullptr)
         {
-            m_instancePtr = new MainWindow();
+            m_instancePtr = new WindowManager();
         }
 
         return m_instancePtr;
     }
 	
-	MainWindow();
-    ~MainWindow();
+	WindowManager();
+    ~WindowManager();
 
 	void MakeWindow();
     void InitWindowApiProperties();
@@ -55,7 +55,7 @@ public:
     ComPtr<ID3D11Device> GetDevice();
 
 private:
-	MainWindow& operator=(const MainWindow&) = delete;
+	WindowManager& operator=(const WindowManager&) = delete;
 
     void InitWindowD3D11();
     void InitWindowImGui();
@@ -72,7 +72,7 @@ public:
     const float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 private:
-    static MainWindow* m_instancePtr;
+    static WindowManager* m_instancePtr;
 
     ComPtr<IDXGISwapChain> m_swapChain;                  // Made by D3D11CreateDeviceAndSwapChain()
     ComPtr<ID3D11Device> m_device;                       // Made by D3D11CreateDeviceAndSwapChain()
