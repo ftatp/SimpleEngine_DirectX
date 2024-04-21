@@ -1,5 +1,5 @@
 #include "MainWindowView.h"
-#include "../ObjectManager.h"
+#include "../SceneManager.h"
 
 #include <iostream>
 
@@ -88,6 +88,32 @@ namespace view
         InitWindowImGui();
     }
 
+    void MainWindowView::UpdateScene()
+    {
+        auto objects = SceneManager::GetInstance()->GetObjectList();
+
+        for (int i = 0; i < objects.size(); i++)
+        {
+            ConstantData constantData = {};
+
+            constantData.model = objects[i]->GetModelTransform();
+            //Matrix::CreateScale(Vector3(1.0f)) * Matrix::CreateRotationX(0.0f) *
+            //Matrix::CreateRotationY(0.0f) * Matrix::CreateRotationZ(0.0f) *
+            //Matrix::CreateTranslation(Vector3(0.0f));
+            constantData.model = constantData.model.Transpose();
+
+            constantData.view = DirectX::XMMatrixLookToLH({ 0.0f, 0.0f, -2.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f });
+            constantData.view = constantData.view.Transpose();
+
+            constantData.projection = DirectX::XMMatrixPerspectiveFovLH(
+                DirectX::XMConvertToRadians(70.0f), float(m_windowWidth) / m_windowHeight, 0.5f, 100.0f);
+
+            constantData.projection = constantData.projection.Transpose();
+
+            objects[i]->SetConstantData(constantData);
+        }
+    }
+
     void MainWindowView::RenderImGui()
     {
         ImGui::Begin("Hello, ImGui!");
@@ -115,7 +141,7 @@ namespace view
         m_deviceContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get());
         m_deviceContext->OMSetDepthStencilState(m_depthStencilState.Get(), 0);
 
-        auto objects = ObjectManager::GetInstance()->GetObjectList();
+        auto objects = SceneManager::GetInstance()->GetObjectList();
 
         for (int i = 0; i < objects.size(); i++)
         {

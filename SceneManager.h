@@ -5,21 +5,21 @@
 #include <memory>
 #include <vector>
 
-class ObjectManager
+class SceneManager
 {
 public:
-	static ObjectManager* GetInstance()
+	static SceneManager* GetInstance()
 	{
 		if (m_instancePtr == nullptr)
 		{
-			m_instancePtr = new ObjectManager();
+			m_instancePtr = new SceneManager();
 		}
 
 		return m_instancePtr;
 	}
 
-	ObjectManager();
-	~ObjectManager();
+	SceneManager();
+	~SceneManager();
 
 	void MakeObject();
 	vector<shared_ptr<object::Object>> GetObjectList();
@@ -29,7 +29,7 @@ public:
 	void SetObjectScale(int objectIndex, Matrix scale);
 
 private:
-	static ObjectManager* m_instancePtr;
+	static SceneManager* m_instancePtr;
 
 	vector<shared_ptr<object::Object>> m_objectList;
 };

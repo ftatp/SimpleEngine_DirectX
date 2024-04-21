@@ -12,7 +12,7 @@
 #include <dxgidebug.h>
 
 #include <Windows.h>
-#include <wrl.h> // ComPtr
+#include <wrl.h>
 
 using namespace Microsoft::WRL;
 using namespace DirectX::SimpleMath;
@@ -28,6 +28,7 @@ namespace view
 		~MainWindowView();
 
 		void InitWindowApiProperties();
+		void UpdateScene();
 		void RenderImGui();
 		void RenderScene();
 

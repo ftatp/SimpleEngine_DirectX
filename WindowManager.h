@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ObjectManager.h"
+#include "SceneManager.h"
 #include "View/MainWindowView.h"
 
 #include <imgui.h>
@@ -41,13 +41,8 @@ public:
     ComPtr<ID3D11Device> GetDevice();
 
 private:
+    static WindowManager* m_instancePtr;
 	WindowManager& operator=(const WindowManager&) = delete;
 
     shared_ptr<view::MainWindowView> m_mainWindowView;
-
-    void MakeScene();
-    void UpdateScene();
-    void RenderScene();
-
-    static WindowManager* m_instancePtr;
 };

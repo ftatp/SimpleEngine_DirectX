@@ -143,7 +143,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="View\MainWindowView.cpp" />
     <ClCompile Include="WindowManager.cpp" />
-    <ClCompile Include="ObjectManager.cpp" />
+    <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Object\GeometryConstructor.cpp" />
     <ClCompile Include="Object\Mesh.cpp" />
     <ClCompile Include="Object\Object.cpp" />
@@ -151,7 +151,7 @@
   <ItemGroup>
     <ClInclude Include="View\MainWindowView.h" />
     <ClInclude Include="WindowManager.h" />
-    <ClInclude Include="ObjectManager.h" />
+    <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Object\GeometryConstructor.h" />
     <ClInclude Include="Object\Mesh.h" />
     <ClInclude Include="Object\Object.h" />
