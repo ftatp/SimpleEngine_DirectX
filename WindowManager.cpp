@@ -5,48 +5,10 @@
 
 using namespace object;
 
-LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-    if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
-    {
-        return true;
-    }
-
-    switch (msg)
-    {
-    case WM_SIZE:
-
-        return 0;
-    case WM_SYSCOMMAND:
-        if ((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
-            return 0;
-        break;
-    case WM_MOUSEMOVE:
-        std::cout << "Mouse " << LOWORD(lParam) << " " << HIWORD(lParam) << std::endl;
-        break;
-    case WM_LBUTTONUP:
-        std::cout << "Up\tLeft mouse button" << std::endl;
-        break;
-    case WM_RBUTTONUP:
-        std::cout << "Up\tRight mouse button" << std::endl;
-        break;
-    case WM_KEYDOWN:
-        std::cout << "KEYDOWN\t" << (int)wParam << std::endl;
-        break;
-    case WM_DESTROY:
-        PostQuitMessage(0);
-        return 0;
-    }
-
-    return DefWindowProc(hWnd, msg, wParam, lParam);
-}
-
 WindowManager* WindowManager::m_instancePtr = nullptr;
 
 WindowManager::WindowManager()
 {
-	m_windowWidth = 1280;
-	m_windowHeight = 960;
 }
 
 WindowManager::~WindowManager()
@@ -58,36 +20,12 @@ WindowManager::~WindowManager()
     m_swapChain->Release();
     m_deviceContext->Release();
     m_device->Release();
-
-    DestroyWindow(m_mainWindow);
 }
 
 void WindowManager::MakeWindow()
 {
-    WNDCLASSEX wndClass = {
-        sizeof(WNDCLASSEX),
-        CS_CLASSDC,
-        WndProc,
-        0L,
-        0L,
-        GetModuleHandle(nullptr),
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        L"SimpleEngine_DirectX",
-        nullptr
-    };
-
-    RECT windowRange = { 0, 0, m_windowWidth, m_windowHeight };
-
-    RegisterClassEx(&wndClass);
-    AdjustWindowRect(&windowRange, WS_OVERLAPPEDWINDOW, TRUE);
-
-    m_mainWindow = CreateWindow(wndClass.lpszClassName, wndClass.lpszClassName, WS_OVERLAPPEDWINDOW,
-        50, 50, windowRange.right - windowRange.left, windowRange.bottom - windowRange.top,
-        nullptr, nullptr, wndClass.hInstance, nullptr);
-
+    m_mainWindowView = make_shared<view::MainWindowView>();
+    
     return;
 }
 
@@ -101,8 +39,8 @@ void WindowManager::RunWindow()
 {
     MSG message = {};
 
-    ShowWindow(m_mainWindow, SW_SHOWDEFAULT);
-    UpdateWindow(m_mainWindow);
+    ShowWindow(m_mainWindowView->GetWindow(), SW_SHOWDEFAULT);
+    UpdateWindow(m_mainWindowView->GetWindow());
 
     MakeScene();
 
@@ -147,13 +85,13 @@ void WindowManager::InitWindowD3D11()
 
     DXGI_SWAP_CHAIN_DESC swapChainDescription;
     swapChainDescription.BufferCount = 2;
-    swapChainDescription.BufferDesc.Width = m_windowWidth;
-    swapChainDescription.BufferDesc.Height = m_windowHeight;
+    swapChainDescription.BufferDesc.Width = m_mainWindowView->GetWindowWidth();
+    swapChainDescription.BufferDesc.Height = m_mainWindowView->GetWindowHeight();
     swapChainDescription.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     swapChainDescription.BufferDesc.RefreshRate.Numerator = 60;
     swapChainDescription.BufferDesc.RefreshRate.Denominator = 1;
     swapChainDescription.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    swapChainDescription.OutputWindow = m_mainWindow;
+    swapChainDescription.OutputWindow = m_mainWindowView->GetWindow();
     swapChainDescription.SampleDesc.Count = 1;
     swapChainDescription.SampleDesc.Quality = 0;
     swapChainDescription.Windowed = TRUE;
@@ -217,8 +155,8 @@ void WindowManager::InitWindowD3D11()
 #pragma region DepthBuffer
     D3D11_TEXTURE2D_DESC depthStencilBufferDesc;
     ZeroMemory(&depthStencilBufferDesc, sizeof(D3D11_TEXTURE2D_DESC));
-    depthStencilBufferDesc.Width = m_windowWidth;
-    depthStencilBufferDesc.Height = m_windowHeight;
+    depthStencilBufferDesc.Width = m_mainWindowView->GetWindowWidth();
+    depthStencilBufferDesc.Height = m_mainWindowView->GetWindowHeight();
     depthStencilBufferDesc.MipLevels = 1;
     depthStencilBufferDesc.ArraySize = 1;
     depthStencilBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -256,7 +194,7 @@ void WindowManager::InitWindowImGui()
 {
     ImGui::CreateContext();
     ImGui_ImplDX11_Init(m_device.Get(), m_deviceContext.Get());
-    ImGui_ImplWin32_Init(m_mainWindow);
+    ImGui_ImplWin32_Init(m_mainWindowView->GetWindow());
 }
 
 void WindowManager::MakeScene()
@@ -284,7 +222,7 @@ void WindowManager::UpdateScene()
         constantData.view = constantData.view.Transpose();
 
         constantData.projection = DirectX::XMMatrixPerspectiveFovLH(
-            DirectX::XMConvertToRadians(70.0f), float(m_windowWidth) / m_windowHeight, 0.5f, 100.0f);
+            DirectX::XMConvertToRadians(70.0f), float(m_mainWindowView->GetWindowWidth()) / m_mainWindowView->GetWindowHeight(), 0.5f, 100.0f);
 
         constantData.projection = constantData.projection.Transpose();
 

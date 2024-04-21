@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ObjectManager.h"
+#include "View/MainWindowView.h"
 
 #include <imgui.h>
 #include <imgui_impl_dx11.h>
@@ -22,8 +23,6 @@
 using namespace DirectX::SimpleMath;
 using namespace Microsoft::WRL;
 using namespace std;
-
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 //struct ConstantData
 //{
@@ -64,14 +63,10 @@ private:
     void UpdateScene();
     void RenderScene();
 
-public:
 
-	HWND m_mainWindow;
-	int m_windowWidth;
-	int	m_windowHeight;
+    shared_ptr<view::MainWindowView> m_mainWindowView;
+
     const float clearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
-
-private:
     static WindowManager* m_instancePtr;
 
     ComPtr<IDXGISwapChain> m_swapChain;                  // Made by D3D11CreateDeviceAndSwapChain()

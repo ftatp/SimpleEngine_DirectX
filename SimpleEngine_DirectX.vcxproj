@@ -141,6 +141,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="View\MainWindowView.cpp" />
     <ClCompile Include="WindowManager.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="Object\GeometryConstructor.cpp" />
@@ -148,6 +149,7 @@
     <ClCompile Include="Object\Object.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="View\MainWindowView.h" />
     <ClInclude Include="WindowManager.h" />
     <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="Object\GeometryConstructor.h" />

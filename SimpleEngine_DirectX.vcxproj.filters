@@ -19,6 +19,12 @@
     <Filter Include="헤더 파일\Object">
       <UniqueIdentifier>{480655f4-d7e7-47d7-87f5-5bae7ca33a4b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\View">
+      <UniqueIdentifier>{40683e1c-7baf-489c-af9e-c33970062952}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\View">
+      <UniqueIdentifier>{f66a4eed-561f-4fa2-9e82-cdd90206868e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -39,6 +45,9 @@
     <ClCompile Include="Object\GeometryConstructor.cpp">
       <Filter>소스 파일\Object</Filter>
     </ClCompile>
+    <ClCompile Include="View\MainWindowView.cpp">
+      <Filter>소스 파일\View</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WindowManager.h">
@@ -55,6 +64,9 @@
     </ClInclude>
     <ClInclude Include="Object\GeometryConstructor.h">
       <Filter>헤더 파일\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="View\MainWindowView.h">
+      <Filter>헤더 파일\View</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
