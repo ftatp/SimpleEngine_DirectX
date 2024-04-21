@@ -1,4 +1,6 @@
 #pragma once
+#include "../EventSystem/Event.h"
+
 #include <imgui.h>
 
 #include <imgui.h>
@@ -39,6 +41,8 @@ namespace view
 		ComPtr<ID3D11Device> GetDevice();
 		ComPtr<ID3D11DeviceContext> GetDeviceContext();
 
+		EventSystem::Event<> OnAddObjectButtonClickEvent;
+
 	private:
 		void InitWindowD3D11();
 		void InitWindowImGui();
@@ -60,6 +64,7 @@ namespace view
 		ComPtr<ID3D11DepthStencilState> m_depthStencilState;
 
 		D3D11_VIEWPORT m_viewport;
+
 	};
 
 	

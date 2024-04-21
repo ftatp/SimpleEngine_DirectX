@@ -25,6 +25,12 @@
     <Filter Include="헤더 파일\View">
       <UniqueIdentifier>{f66a4eed-561f-4fa2-9e82-cdd90206868e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\EventSystem">
+      <UniqueIdentifier>{62aac416-e7b0-40a0-bcf1-6ebefe062309}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\EventSystem">
+      <UniqueIdentifier>{a20120cb-907e-4f02-8d33-7a39771a98bc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -48,6 +54,12 @@
     <ClCompile Include="View\MainWindowView.cpp">
       <Filter>소스 파일\View</Filter>
     </ClCompile>
+    <ClCompile Include="EventSystem\Event.cpp">
+      <Filter>소스 파일\EventSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ViewController.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WindowManager.h">
@@ -67,6 +79,12 @@
     </ClInclude>
     <ClInclude Include="View\MainWindowView.h">
       <Filter>헤더 파일\View</Filter>
+    </ClInclude>
+    <ClInclude Include="EventSystem\Event.h">
+      <Filter>헤더 파일\EventSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewController.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

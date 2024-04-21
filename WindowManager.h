@@ -11,13 +11,11 @@
 #include <memory>
 #include <iostream>
 
-#include <wrl.h> // ComPtr
+#include <wrl.h>
 
 #include <vector>
 
-using namespace DirectX::SimpleMath;
 using namespace Microsoft::WRL;
-using namespace std;
 
 class WindowManager
 {

@@ -120,7 +120,7 @@ namespace view
         ImGui::Text("This is some text");
         if (ImGui::Button("Add Object"))
         {
-
+            OnAddObjectButtonClickEvent.Trigger();
         }
         ImGui::End();
         ImGui::Render();

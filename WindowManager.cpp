@@ -1,9 +1,9 @@
 #include "WindowManager.h"
+#include "ViewController.h"
+
 #include "Object/GeometryConstructor.h"
 
 #include <iostream>
-
-using namespace object;
 
 WindowManager* WindowManager::m_instancePtr = nullptr;
 
@@ -23,6 +23,7 @@ void WindowManager::MakeWindow()
 {
     m_mainWindowView = make_shared<view::MainWindowView>();
     m_mainWindowView->InitWindowApiProperties();
+    ViewController::GetInstance()->SetEvent(m_mainWindowView);
 
     return;
 }
@@ -48,7 +49,6 @@ void WindowManager::RunWindow()
         ImGui::NewFrame();
 
         m_mainWindowView->RenderImGui();
-
         m_mainWindowView->UpdateScene();
         m_mainWindowView->RenderScene();
     }
