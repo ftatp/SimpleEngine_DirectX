@@ -294,7 +294,6 @@ namespace view
 
     void MainWindowView::InitWindowImGui()
     {
-        ImGui::CreateContext();
         ImGui_ImplDX11_Init(m_device.Get(), m_deviceContext.Get());
         ImGui_ImplWin32_Init(m_window);
     }
