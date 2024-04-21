@@ -10,15 +10,6 @@ namespace EventSystem
         listeners.push_back(listener);
     }
 
-    //template<typename... T>
-    //void Event<T...>::Trigger()
-    //{
-    //    for (auto& listener : listeners)
-    //    {
-    //        listener();
-    //    }
-    //}
-
     template<typename... T>
     void Event<T...>::Trigger(T... args)
     {
