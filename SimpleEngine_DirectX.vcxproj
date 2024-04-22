@@ -142,6 +142,7 @@
   <ItemGroup>
     <ClCompile Include="EventSystem\Event.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ViewController.cpp" />
     <ClCompile Include="View\MainWindowView.cpp" />
     <ClCompile Include="WindowManager.cpp" />
@@ -152,6 +153,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EventSystem\Event.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="ViewController.h" />
     <ClInclude Include="View\MainWindowView.h" />
     <ClInclude Include="WindowManager.h" />

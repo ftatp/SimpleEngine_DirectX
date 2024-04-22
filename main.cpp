@@ -1,16 +1,10 @@
 #include "WindowManager.h"
-
-void MakeScene()
-{
-    //SceneManager::GetInstance()->MakeObject();
-    //SceneManager::GetInstance()->MakeObject();
-    //SceneManager::GetInstance()->SetObjectTranslation(1, Matrix::CreateTranslation(Vector3(1.0f, 0.0f, 0.0f)));
-}
+#include "SceneManager.h"
 
 int main()
 {
     WindowManager::GetInstance()->MakeWindow();
-    MakeScene();
+    SceneManager::GetInstance()->MakeScene();
     WindowManager::GetInstance()->RunWindow();
 
     return 0;

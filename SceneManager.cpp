@@ -10,32 +10,15 @@ SceneManager::~SceneManager()
 {
 }
 
-void SceneManager::MakeObject()
+shared_ptr<Scene> SceneManager::MakeScene()
 {
-	shared_ptr<object::Object> newObject = make_shared<object::Object>();
+	m_currentScene = make_shared<Scene>();
+	m_sceneList.push_back(m_currentScene);
 
-	m_objectList.push_back(newObject);
+	return m_currentScene;
 }
 
-vector<shared_ptr<object::Object>> SceneManager::GetObjectList()
+shared_ptr<Scene> SceneManager::GetCurrentScene()
 {
-	return m_objectList;
-}
-
-void SceneManager::SetObjectTranslation(int objectIndex, Vector3 translation)
-{
-	auto object = m_objectList[objectIndex];
-	object->SetTranslation(translation);
-}
-
-void SceneManager::SetObjectRotation(int objectIndex, Vector3 rotation)
-{
-	auto object = m_objectList[objectIndex];
-	object->SetRotation(rotation);
-}
-
-void SceneManager::SetObjectScale(int objectIndex, Vector3 scale)
-{
-	auto object = m_objectList[objectIndex];
-	object->SetScale(scale);
+	return m_currentScene;
 }

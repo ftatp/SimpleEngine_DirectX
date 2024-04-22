@@ -18,7 +18,7 @@ void ViewController::SetEvent(std::shared_ptr<view::MainWindowView> mainWindow)
 	mainWindow->OnAddObjectButtonClickEvent.AddListener(
 		[]() {
 			std::cout << "Button clicked!" << std::endl; 
-			SceneManager::GetInstance()->MakeObject();
+			SceneManager::GetInstance()->GetCurrentScene()->MakeObject();
 		}
 	);
 }

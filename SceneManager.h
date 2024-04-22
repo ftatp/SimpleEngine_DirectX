@@ -1,6 +1,5 @@
 #pragma once
-#include "Object/Object.h"
-#include "Object/GeometryConstructor.h"
+#include "Scene.h"
 
 #include <memory>
 #include <vector>
@@ -21,16 +20,13 @@ public:
 	SceneManager();
 	~SceneManager();
 
-	void MakeObject();
-	vector<shared_ptr<object::Object>> GetObjectList();
-
-	void SetObjectTranslation(int objectIndex, Vector3 translation);
-	void SetObjectRotation(int objectIndex, Vector3 rotation);
-	void SetObjectScale(int objectIndex, Vector3 scale);
+	shared_ptr<Scene> MakeScene();
+	shared_ptr<Scene> GetCurrentScene();
 
 private:
 	static SceneManager* m_instancePtr;
 
-	vector<shared_ptr<object::Object>> m_objectList;
+	shared_ptr<Scene> m_currentScene;
+	vector<shared_ptr<Scene>> m_sceneList;
 };
 

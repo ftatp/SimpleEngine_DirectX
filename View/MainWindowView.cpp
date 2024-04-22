@@ -91,7 +91,7 @@ namespace view
 
     void MainWindowView::UpdateScene()
     {
-        auto objects = SceneManager::GetInstance()->GetObjectList();
+        auto objects = SceneManager::GetInstance()->GetCurrentScene()->GetObjectList();
 
         for (int i = 0; i < objects.size(); i++)
         {
@@ -124,7 +124,7 @@ namespace view
             OnAddObjectButtonClickEvent.Trigger();
         }
 
-        auto objects = SceneManager::GetInstance()->GetObjectList();
+        auto objects = SceneManager::GetInstance()->GetCurrentScene()->GetObjectList();
 
         for (int i = 0; i < objects.size(); i++)
         {
@@ -155,7 +155,7 @@ namespace view
         m_deviceContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get());
         m_deviceContext->OMSetDepthStencilState(m_depthStencilState.Get(), 0);
 
-        auto objects = SceneManager::GetInstance()->GetObjectList();
+        auto objects = SceneManager::GetInstance()->GetCurrentScene()->GetObjectList();
 
         for (int i = 0; i < objects.size(); i++)
         {
