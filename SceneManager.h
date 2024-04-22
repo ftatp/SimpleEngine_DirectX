@@ -24,9 +24,9 @@ public:
 	void MakeObject();
 	vector<shared_ptr<object::Object>> GetObjectList();
 
-	void SetObjectTranslation(int objectIndex, Matrix translation);
-	void SetObjectRotation(int objectIndex, Matrix rotation);
-	void SetObjectScale(int objectIndex, Matrix scale);
+	void SetObjectTranslation(int objectIndex, Vector3 translation);
+	void SetObjectRotation(int objectIndex, Vector3 rotation);
+	void SetObjectScale(int objectIndex, Vector3 scale);
 
 private:
 	static SceneManager* m_instancePtr;

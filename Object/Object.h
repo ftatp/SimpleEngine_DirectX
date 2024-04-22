@@ -25,10 +25,14 @@ namespace object
 		void SetVertexShader(LPCWSTR vertexShaderFile);
 		void SetPixelShader(LPCWSTR pixelShaderFile);
 		
+		Vector3* GetTranslationPtr();
+		Vector3* GetRotationPtr();
+		Vector3* GetScalePtr();
+
 		Matrix GetModelTransform();
-		void SetTranslation(Matrix translation);
-		void SetRotation(Matrix rotation);
-		void SetScale(Matrix scale);
+		void SetTranslation(Vector3 translation);
+		void SetRotation(Vector3 rotation);
+		void SetScale(Vector3 scale);
 		ConstantData GetConstantData();
 		void SetConstantData(ConstantData constantData);
 
@@ -50,9 +54,9 @@ namespace object
 
 		shared_ptr<Mesh> m_mesh;
 		
-		Matrix m_translation = Matrix();
-		Matrix m_rotation = Matrix();
-		Matrix m_scale = Matrix();
+		Vector3 m_translation = Vector3(0.0f);
+		Vector3 m_rotation = Vector3(0.0f);
+		Vector3 m_scale = Vector3(1.0f);
 		ConstantData m_constantData = {};
 
 		ComPtr<ID3D11Buffer> m_vertexBuffer;

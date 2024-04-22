@@ -11,9 +11,13 @@ namespace object
         m_vertexShaderFile = L"VertexShader.hlsl";
         m_pixelShaderFile = L"PixelShader.hlsl";
 
-        m_translation = Matrix::CreateTranslation(Vector3(0.0f));
-        m_rotation = Matrix::CreateRotationX(0.0f) * Matrix::CreateRotationY(0.0f) * Matrix::CreateRotationZ(0.0f);
-        m_scale = Matrix::CreateScale(Vector3(1.0f));
+        //m_translation = Matrix::CreateTranslation(Vector3(0.0f));
+        //m_rotation = Matrix::CreateRotationX(0.0f) * Matrix::CreateRotationY(0.0f) * Matrix::CreateRotationZ(0.0f);
+        //m_scale = Matrix::CreateScale(Vector3(1.0f));
+
+        m_translation = Vector3(0.0f);
+        m_rotation = Vector3(0.0f);
+        m_scale = Vector3(1.0f, 1.0f, 1.0f);
 
         m_constantData.model = Matrix();
         m_constantData.view = Matrix();
@@ -50,22 +54,42 @@ namespace object
         CreatePixelShader();
     }
 
-    Matrix Object::GetModelTransform()
+    Vector3* Object::GetTranslationPtr()
     {
-        return m_scale * m_rotation * m_translation;
+        return &m_translation;
+    }
+    
+    Vector3* Object::GetRotationPtr()
+    {
+        return &m_rotation;
+    }
+    
+    Vector3* Object::GetScalePtr()
+    {
+        return &m_scale;
     }
 
-    void Object::SetTranslation(Matrix translation)
+
+    Matrix Object::GetModelTransform()
+    {
+        return Matrix::CreateScale(m_scale) 
+            * Matrix::CreateRotationZ(m_rotation.z)
+            * Matrix::CreateRotationY(m_rotation.y)
+            * Matrix::CreateRotationX(m_rotation.x)
+            * Matrix::CreateTranslation(m_translation);
+    }
+
+    void Object::SetTranslation(Vector3 translation)
     {
         m_translation = translation;
     }
 
-    void Object::SetRotation(Matrix rotation)
+    void Object::SetRotation(Vector3 rotation)
     {
         m_rotation = rotation;
     }
     
-    void Object::SetScale(Matrix scale) 
+    void Object::SetScale(Vector3 scale)
     {
         m_scale = scale;
     } 

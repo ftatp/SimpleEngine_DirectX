@@ -22,19 +22,19 @@ vector<shared_ptr<object::Object>> SceneManager::GetObjectList()
 	return m_objectList;
 }
 
-void SceneManager::SetObjectTranslation(int objectIndex, Matrix translation)
+void SceneManager::SetObjectTranslation(int objectIndex, Vector3 translation)
 {
 	auto object = m_objectList[objectIndex];
 	object->SetTranslation(translation);
 }
 
-void SceneManager::SetObjectRotation(int objectIndex, Matrix rotation)
+void SceneManager::SetObjectRotation(int objectIndex, Vector3 rotation)
 {
 	auto object = m_objectList[objectIndex];
 	object->SetRotation(rotation);
 }
 
-void SceneManager::SetObjectScale(int objectIndex, Matrix scale)
+void SceneManager::SetObjectScale(int objectIndex, Vector3 scale)
 {
 	auto object = m_objectList[objectIndex];
 	object->SetScale(scale);

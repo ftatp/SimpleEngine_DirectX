@@ -2,6 +2,7 @@
 #include "../SceneManager.h"
 
 #include <iostream>
+#include <string>
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     {
@@ -44,7 +45,7 @@ namespace view
 	MainWindowView::MainWindowView()
 	{
         m_windowWidth = 1280;
-        m_windowHeight = 960;
+        m_windowHeight = 720;
 
         WNDCLASSEX m_wndClass = {
         sizeof(WNDCLASSEX),
@@ -97,9 +98,6 @@ namespace view
             ConstantData constantData = {};
 
             constantData.model = objects[i]->GetModelTransform();
-            //Matrix::CreateScale(Vector3(1.0f)) * Matrix::CreateRotationX(0.0f) *
-            //Matrix::CreateRotationY(0.0f) * Matrix::CreateRotationZ(0.0f) *
-            //Matrix::CreateTranslation(Vector3(0.0f));
             constantData.model = constantData.model.Transpose();
 
             constantData.view = DirectX::XMMatrixLookToLH({ 0.0f, 0.0f, -2.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f });
@@ -114,6 +112,9 @@ namespace view
         }
     }
 
+    Vector3 m_x0 = Vector3(0.0f);
+    Vector3 m_x1 = Vector3(0.0f);
+
     void MainWindowView::RenderImGui()
     {
         ImGui::Begin("Hello, ImGui!");
@@ -122,6 +123,19 @@ namespace view
         {
             OnAddObjectButtonClickEvent.Trigger();
         }
+
+        auto objects = SceneManager::GetInstance()->GetObjectList();
+
+        for (int i = 0; i < objects.size(); i++)
+        {
+            auto object = objects[i];
+            ImGui::BeginGroup();
+            ImGui::SliderFloat3(("Translation" + std::to_string(i)).data(), &(objects[i]->GetTranslationPtr()->x), -2.0f, 2.0f);
+            ImGui::SliderFloat3(("Rotation" + std::to_string(i)).data(), &(objects[i]->GetRotationPtr()->x), -2.0f, 2.0f);
+            ImGui::SliderFloat3(("Scale" + std::to_string(i)).data(), &(objects[i]->GetScalePtr()->x), -2.0f, 2.0f);
+            ImGui::EndGroup();
+        }
+
         ImGui::End();
         ImGui::Render();
     }
@@ -259,8 +273,8 @@ namespace view
 #pragma region Viewport
         // Setup viewport
 
-        m_viewport.Width = 1280;
-        m_viewport.Height = 720;
+        m_viewport.Width = m_windowWidth;
+        m_viewport.Height = m_windowHeight;
         m_viewport.MinDepth = 0.0f;
         m_viewport.MaxDepth = 1.0f;
         m_viewport.TopLeftX = 0;
