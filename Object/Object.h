@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Mesh.h"
+#include "Material.h"
 #include "GeometryConstructor.h"
 #include <wrl.h>
 
@@ -54,6 +55,7 @@ namespace object
 		void CreatePixelShader();
 
 		shared_ptr<Mesh> m_mesh;
+		shared_ptr<Material> m_material;
 		
 		Vector3 m_translation = Vector3(0.0f);
 		Vector3 m_rotation = Vector3(0.0f);

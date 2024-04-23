@@ -142,6 +142,7 @@
   <ItemGroup>
     <ClCompile Include="EventSystem\Event.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Object\Material.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ViewController.cpp" />
     <ClCompile Include="View\MainWindowView.cpp" />
@@ -153,6 +154,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EventSystem\Event.h" />
+    <ClInclude Include="Object\Material.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="ViewController.h" />
     <ClInclude Include="View\MainWindowView.h" />
@@ -163,10 +165,10 @@
     <ClInclude Include="Object\Object.h" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="PixelShader.hlsl">
+    <FxCompile Include="ShaderCollection\PixelShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
     </FxCompile>
-    <FxCompile Include="VertexShader.hlsl" />
+    <FxCompile Include="ShaderCollection\VertexShader.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -11,13 +11,9 @@ namespace object
         m_mesh = CreateGrid(2.0f, 1.7f, 5, 3);
         //m_mesh = CreateBox();
         //m_mesh = CreateCylinder(1.0f, 0.7f, 2.0f, 20);
-        m_vertexShaderFile = L"VertexShader.hlsl";
-        m_pixelShaderFile = L"PixelShader.hlsl";
 
-        //m_translation = Matrix::CreateTranslation(Vector3(0.0f));
-        //m_rotation = Matrix::CreateRotationX(0.0f) * Matrix::CreateRotationY(0.0f) * Matrix::CreateRotationZ(0.0f);
-        //m_scale = Matrix::CreateScale(Vector3(1.0f));
-
+        m_material = make_shared<Material>();
+        
         m_translation = Vector3(0.0f);
         m_rotation = Vector3(0.0f);
         m_scale = Vector3(1.0f, 1.0f, 1.0f);
@@ -25,6 +21,9 @@ namespace object
         m_constantData.model = Matrix();
         m_constantData.view = Matrix();
         m_constantData.projection = Matrix();
+
+        m_vertexShaderFile = L"ShaderCollection/VertexShader.hlsl";
+        m_pixelShaderFile = L"ShaderCollection/PixelShader.hlsl";
 
         CreateVertexBuffer();
         CreateIndiceBuffer();

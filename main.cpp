@@ -1,6 +1,8 @@
 #include "WindowManager.h"
 #include "SceneManager.h"
 
+#include <iostream>
+
 int main()
 {
     WindowManager::GetInstance()->MakeWindow();

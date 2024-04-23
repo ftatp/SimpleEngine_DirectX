@@ -31,6 +31,9 @@
     <Filter Include="헤더 파일\EventSystem">
       <UniqueIdentifier>{a20120cb-907e-4f02-8d33-7a39771a98bc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ShaderCollection">
+      <UniqueIdentifier>{4f7b4d02-5045-4b2a-847f-126333006636}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -63,6 +66,9 @@
     <ClCompile Include="Scene.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Object\Material.cpp">
+      <Filter>소스 파일\Object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WindowManager.h">
@@ -92,9 +98,16 @@
     <ClInclude Include="Scene.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Object\Material.h">
+      <Filter>헤더 파일\Object</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="PixelShader.hlsl" />
-    <FxCompile Include="VertexShader.hlsl" />
+    <FxCompile Include="ShaderCollection\PixelShader.hlsl">
+      <Filter>ShaderCollection</Filter>
+    </FxCompile>
+    <FxCompile Include="ShaderCollection\VertexShader.hlsl">
+      <Filter>ShaderCollection</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
