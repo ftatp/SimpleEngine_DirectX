@@ -7,7 +7,10 @@ namespace object
 {
 	Object::Object()
 	{
-        m_mesh = CreateSquare();
+        //m_mesh = CreateTriangle();
+        m_mesh = CreateGrid(2.0f, 1.7f, 5, 3);
+        //m_mesh = CreateBox();
+        //m_mesh = CreateCylinder(1.0f, 0.7f, 2.0f, 20);
         m_vertexShaderFile = L"VertexShader.hlsl";
         m_pixelShaderFile = L"PixelShader.hlsl";
 

@@ -285,7 +285,7 @@ namespace view
         D3D11_RASTERIZER_DESC rasterizerDesc;
         ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
         rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-        rasterizerDesc.CullMode = D3D11_CULL_BACK;
+        rasterizerDesc.CullMode = D3D11_CULL_NONE; // Something weird when changed to D3D11_CULL_FRONT
         rasterizerDesc.FrontCounterClockwise = false;
         rasterizerDesc.DepthClipEnable = true;
 
