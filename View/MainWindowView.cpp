@@ -112,9 +112,6 @@ namespace view
         }
     }
 
-    Vector3 m_x0 = Vector3(0.0f);
-    Vector3 m_x1 = Vector3(0.0f);
-
     void MainWindowView::RenderImGui()
     {
         ImGui::Begin("Hello, ImGui!");
@@ -146,8 +143,6 @@ namespace view
         m_deviceContext->ClearDepthStencilView(
             m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-        UINT stride = sizeof(Vector3);
-        UINT offset = 0;
         m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         m_deviceContext->RSSetViewports(1, &m_viewport);
         m_deviceContext->RSSetState(m_rasterizerState.Get());
@@ -159,6 +154,7 @@ namespace view
 
         for (int i = 0; i < objects.size(); i++)
         {
+
             auto vertexBuffer = objects[i]->GetVertexBuffer();
             auto inputLayout = objects[i]->GetInputLayout();
             auto indexBuffer = objects[i]->GetIndexBuffer();
@@ -168,6 +164,8 @@ namespace view
 
             auto constantData = objects[i]->GetConstantData();
 
+            UINT stride = sizeof(object::Vertex);
+            UINT offset = 0;
             D3D11_MAPPED_SUBRESOURCE ms;
             m_deviceContext->Map(constantBuffer.Get(), NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
             memcpy(ms.pData, &constantData, sizeof(constantData));
@@ -181,7 +179,7 @@ namespace view
             m_deviceContext->VSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
             m_deviceContext->PSSetShader(pixelShader.Get(), 0, 0);
 
-            m_deviceContext->DrawIndexed(3, 0, 0);
+            m_deviceContext->DrawIndexed(objects[i]->GetMesh()->GetIndices().size(), 0, 0);
         }
 
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());

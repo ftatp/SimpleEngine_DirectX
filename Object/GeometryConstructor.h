@@ -6,4 +6,5 @@
 namespace object
 {
 	shared_ptr<Mesh> CreateTriangle();
+	shared_ptr<Mesh> CreateSquare();
 }

@@ -10,13 +10,13 @@ namespace object
 	{
 	}
 
-	void Mesh::SetMeshData(vector<Vector3> vertices, vector<uint16_t> indices)
+	void Mesh::SetMeshData(vector<Vertex> vertices, vector<uint16_t> indices)
 	{
 		this->vertices = vertices;
 		this->indices = indices;
 	}
 
-	vector<Vector3> Mesh::GetVertices()
+	vector<object::Vertex> Mesh::GetVertices()
 	{
 		return vertices;
 	}

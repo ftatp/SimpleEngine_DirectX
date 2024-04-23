@@ -21,6 +21,7 @@ namespace object
 		Object();
 		~Object();
 
+		shared_ptr<Mesh> GetMesh();
 		void SetMesh(shared_ptr<Mesh> mesh);
 		void SetVertexShader(LPCWSTR vertexShaderFile);
 		void SetPixelShader(LPCWSTR pixelShaderFile);

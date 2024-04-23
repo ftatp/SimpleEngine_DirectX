@@ -11,19 +11,27 @@ using namespace std;
 
 namespace object 
 {
+	struct Vertex
+	{
+		Vector3 position;
+		Vector3 normal;
+		Vector3 color;
+		Vector2 textureCoord;
+	};
+
 	class Mesh
 	{
 	public:
 		Mesh();
 		~Mesh();
 
-		void SetMeshData(vector<Vector3> vertices, vector<uint16_t> indices);
+		void SetMeshData(vector<object::Vertex> vertices, vector<uint16_t> indices);
 
-		vector<Vector3> GetVertices();
+		vector<object::Vertex> GetVertices();
 		vector<uint16_t> GetIndices();
 
 	private:
-		vector<Vector3> vertices;
+		vector<object::Vertex> vertices;
 		vector<uint16_t> indices;
 	};
 }

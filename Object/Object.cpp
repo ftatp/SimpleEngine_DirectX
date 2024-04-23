@@ -7,7 +7,7 @@ namespace object
 {
 	Object::Object()
 	{
-        m_mesh = CreateTriangle();
+        m_mesh = CreateSquare();
         m_vertexShaderFile = L"VertexShader.hlsl";
         m_pixelShaderFile = L"PixelShader.hlsl";
 
@@ -34,6 +34,11 @@ namespace object
 	{
         
 	}
+
+    shared_ptr<Mesh> Object::GetMesh()
+    {
+        return m_mesh;
+    }
 
 	void Object::SetMesh(shared_ptr<Mesh> mesh)
 	{
@@ -68,7 +73,6 @@ namespace object
     {
         return &m_scale;
     }
-
 
     Matrix Object::GetModelTransform()
     {
@@ -138,11 +142,11 @@ namespace object
     {
         D3D11_BUFFER_DESC vertexBufferDesc;
         ZeroMemory(&vertexBufferDesc, sizeof(D3D11_BUFFER_DESC));
+        vertexBufferDesc.ByteWidth = UINT(sizeof(object::Vertex) * m_mesh->GetVertices().size());
         vertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-        vertexBufferDesc.ByteWidth = UINT(sizeof(Vector3) * m_mesh->GetVertices().size());
         vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
         vertexBufferDesc.CPUAccessFlags = 0;
-        vertexBufferDesc.StructureByteStride = UINT(sizeof(Vector3));
+        vertexBufferDesc.StructureByteStride = UINT(sizeof(object::Vertex));
 
         D3D11_SUBRESOURCE_DATA vertexBufferSubresource;
         ZeroMemory(&vertexBufferSubresource, sizeof(D3D11_SUBRESOURCE_DATA));
@@ -161,8 +165,8 @@ namespace object
     {
         D3D11_BUFFER_DESC indexBufferDesc;
         ZeroMemory(&indexBufferDesc, sizeof(D3D11_BUFFER_DESC));
-        indexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
         indexBufferDesc.ByteWidth = UINT(sizeof(uint16_t) * m_mesh->GetIndices().size());
+        indexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
         indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
         indexBufferDesc.CPUAccessFlags = 0;
         indexBufferDesc.StructureByteStride = UINT(sizeof(uint16_t));
@@ -229,13 +233,15 @@ namespace object
             nullptr, &m_vertexShader);
 
         vector<D3D11_INPUT_ELEMENT_DESC> inputLayoutElements = {
-            {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+            {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,          D3D11_INPUT_PER_VERTEX_DATA, 0},
+            {"NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 4 * 3,      D3D11_INPUT_PER_VERTEX_DATA, 0},
+            {"COLOR",    0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 4 * 3 * 2,  D3D11_INPUT_PER_VERTEX_DATA, 0},
+            {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 4 * 3 * 3,  D3D11_INPUT_PER_VERTEX_DATA, 0},
         };
 
         WindowManager::GetInstance()->GetDevice()->CreateInputLayout(
             inputLayoutElements.data(), UINT(inputLayoutElements.size()),
             shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), &m_inputLayout);
-
     }
 
     void Object::CreatePixelShader()
