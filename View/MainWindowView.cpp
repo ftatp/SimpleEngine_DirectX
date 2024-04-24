@@ -123,23 +123,29 @@ namespace view
 
         for (int i = 0; i < objects.size(); i++)
         {
-            VertexShaderConstantData constantData = {};
+            VertexShaderConstantData vertexShaderConstantData = {};
 
-            constantData.model = objects[i]->GetModelTransform();
-            constantData.model = constantData.model.Transpose();
+            vertexShaderConstantData.model = objects[i]->GetModelTransform();
+            vertexShaderConstantData.model = vertexShaderConstantData.model.Transpose();
 
             // ============================================================================
             // TODO : Must be decided by Camera
-            constantData.view = DirectX::XMMatrixLookToLH(
+            vertexShaderConstantData.view = DirectX::XMMatrixLookToLH(
                 { 0.0f, 0.0f, -2.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f });
-            constantData.view = constantData.view.Transpose();
+            vertexShaderConstantData.view = vertexShaderConstantData.view.Transpose();
 
-            constantData.projection = DirectX::XMMatrixPerspectiveFovLH(
+            vertexShaderConstantData.projection = DirectX::XMMatrixPerspectiveFovLH(
                 DirectX::XMConvertToRadians(70.0f), float(m_windowWidth) / m_windowHeight, 0.5f, 100.0f);
 
-            constantData.projection = constantData.projection.Transpose();
+            vertexShaderConstantData.projection = vertexShaderConstantData.projection.Transpose();
             // ============================================================================
-            objects[i]->SetVertexShaderConstantData(constantData);
+            objects[i]->SetVertexShaderConstantData(vertexShaderConstantData);
+
+            PixelShaderConstantData pixelShaderConstantData = {};
+
+            pixelShaderConstantData.useTexture = false;
+            pixelShaderConstantData.eyePosition = { 0.0f, 0.0f, -2.0f };
+            objects[i]->SetPixelShaderConstantData(pixelShaderConstantData);
         }
     }
 
@@ -166,6 +172,7 @@ namespace view
             auto vertexShader = objects[i]->GetVertexShader();
             auto vertexShaderConstantBuffer = objects[i]->GetVertexShaderConstantBuffer();
             auto pixelShader = objects[i]->GetPixelShader();
+            auto pixelShaderConstantBuffer = objects[i]->GetPixelShaderConstantBuffer();
 
             UINT stride = sizeof(object::Vertex);
             UINT offset = 0;
@@ -177,6 +184,7 @@ namespace view
             m_deviceContext->VSSetShader(vertexShader.Get(), 0, 0);
             m_deviceContext->VSSetConstantBuffers(0, 1, vertexShaderConstantBuffer.GetAddressOf());
             m_deviceContext->PSSetShader(pixelShader.Get(), 0, 0);
+            m_deviceContext->PSSetConstantBuffers(0, 1, pixelShaderConstantBuffer.GetAddressOf());
 
             m_deviceContext->DrawIndexed(objects[i]->GetMesh()->GetIndices().size(), 0, 0);
         }

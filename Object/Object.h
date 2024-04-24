@@ -14,6 +14,15 @@ struct VertexShaderConstantData
 	Matrix projection;
 };
 
+struct PixelShaderConstantData {
+	bool useTexture; // 1 but padded to 4
+	Vector3 eyePosition;
+	//int lightMode; // 4
+	//float padding[3];
+	object::Material material;
+//	Light lights[MAX_LIGHTS];
+};
+
 namespace object 
 {
 	class Object
@@ -37,10 +46,13 @@ namespace object
 		void SetScale(Vector3 scale);
 		VertexShaderConstantData GetVertexShaderConstantData();
 		void SetVertexShaderConstantData(VertexShaderConstantData vertexShaderConstantData);
+		PixelShaderConstantData GetPixelShaderConstantData();
+		void SetPixelShaderConstantData(PixelShaderConstantData pixelShaderConstantData);
 
 		ComPtr<ID3D11Buffer> GetVertexBuffer();
 		ComPtr<ID3D11Buffer> GetIndexBuffer();
 		ComPtr<ID3D11Buffer> GetVertexShaderConstantBuffer();
+		ComPtr<ID3D11Buffer> GetPixelShaderConstantBuffer();
 		
 		ComPtr<ID3D11VertexShader> GetVertexShader();
 		ComPtr<ID3D11InputLayout> GetInputLayout();
@@ -64,10 +76,12 @@ namespace object
 		Vector3 m_rotation = Vector3(0.0f);
 		Vector3 m_scale = Vector3(1.0f);
 		VertexShaderConstantData m_vertexShaderConstantData = {};
+		PixelShaderConstantData m_pixelShaderConstantData = {};
 
 		ComPtr<ID3D11Buffer> m_vertexBuffer;
 		ComPtr<ID3D11Buffer> m_indexBuffer;
 		ComPtr<ID3D11Buffer> m_vertexShaderConstantBuffer;
+		ComPtr<ID3D11Buffer> m_pixelShaderConstantBuffer;
 
 		LPCWSTR m_vertexShaderFile;
 		LPCWSTR m_pixelShaderFile;

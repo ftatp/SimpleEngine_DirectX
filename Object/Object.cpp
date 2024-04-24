@@ -13,6 +13,7 @@ namespace object
         //m_mesh = CreateCylinder(1.0f, 0.7f, 2.0f, 20);
 
         m_material = make_shared<Material>();
+        m_material->SetAmbient({0.3f, 0.4f, 0.6f});
         
         m_translation = Vector3(0.0f);
         m_rotation = Vector3(0.0f);
@@ -28,6 +29,7 @@ namespace object
         CreateVertexBuffer();
         CreateIndiceBuffer();
         CreateConstantBuffer(m_vertexShaderConstantData, m_vertexShaderConstantBuffer);
+        CreateConstantBuffer(m_pixelShaderConstantData, m_pixelShaderConstantBuffer);
         CreateVertexShader();
         CreatePixelShader();
 	}
@@ -111,6 +113,18 @@ namespace object
         UpdateConstantBuffer(m_vertexShaderConstantData, m_vertexShaderConstantBuffer);
     }
 
+    PixelShaderConstantData Object::GetPixelShaderConstantData()
+    {
+        return m_pixelShaderConstantData;
+    }
+
+    void Object::SetPixelShaderConstantData(PixelShaderConstantData pixelShaderConstantData)
+    {
+        m_pixelShaderConstantData = pixelShaderConstantData;
+        m_pixelShaderConstantData.material = *m_material;
+        UpdateConstantBuffer(m_pixelShaderConstantData, m_pixelShaderConstantBuffer);
+    }
+
     ComPtr<ID3D11Buffer> Object::GetVertexBuffer()
     {
         return m_vertexBuffer;
@@ -124,6 +138,11 @@ namespace object
     ComPtr<ID3D11Buffer> Object::GetVertexShaderConstantBuffer()
     {
         return m_vertexShaderConstantBuffer;
+    }
+
+    ComPtr<ID3D11Buffer> Object::GetPixelShaderConstantBuffer()
+    {
+        return m_pixelShaderConstantBuffer;
     }
     
     ComPtr<ID3D11VertexShader> Object::GetVertexShader()
@@ -194,6 +213,8 @@ namespace object
 
     template void Object::CreateConstantBuffer<VertexShaderConstantData>(
         VertexShaderConstantData& constantData, ComPtr<ID3D11Buffer>& constantBuffer);
+    template void Object::CreateConstantBuffer<PixelShaderConstantData>(
+        PixelShaderConstantData& constantData, ComPtr<ID3D11Buffer>& constantBuffer);
 
     template <typename T>
     void Object::CreateConstantBuffer(T& constantData, ComPtr<ID3D11Buffer>& constantBuffer)
@@ -222,6 +243,8 @@ namespace object
 
     template void Object::UpdateConstantBuffer<VertexShaderConstantData>(
         VertexShaderConstantData&, Microsoft::WRL::ComPtr<ID3D11Buffer>&);
+    template void Object::UpdateConstantBuffer<PixelShaderConstantData>(
+        PixelShaderConstantData&, Microsoft::WRL::ComPtr<ID3D11Buffer>&);
 
     template <typename T>
     void Object::UpdateConstantBuffer(T& constantData, ComPtr<ID3D11Buffer>& constantBuffer)
