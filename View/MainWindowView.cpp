@@ -160,7 +160,6 @@ namespace view
 
         for (int i = 0; i < objects.size(); i++)
         {
-
             auto vertexBuffer = objects[i]->GetVertexBuffer();
             auto inputLayout = objects[i]->GetInputLayout();
             auto indexBuffer = objects[i]->GetIndexBuffer();

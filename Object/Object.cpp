@@ -27,7 +27,7 @@ namespace object
 
         CreateVertexBuffer();
         CreateIndiceBuffer();
-        CreateConstantBuffer();
+        CreateConstantBuffer(m_vertexShaderConstantData, m_vertexShaderConstantBuffer);
         CreateVertexShader();
         CreatePixelShader();
 	}
@@ -161,7 +161,8 @@ namespace object
         vertexBufferSubresource.pSysMem = vertices.data();
 
         const HRESULT isVertexBufferCreated =
-            WindowManager::GetInstance()->GetDevice()->CreateBuffer(&vertexBufferDesc, &vertexBufferSubresource, m_vertexBuffer.GetAddressOf());
+            WindowManager::GetInstance()->GetDevice()->CreateBuffer(
+                &vertexBufferDesc, &vertexBufferSubresource, m_vertexBuffer.GetAddressOf());
 
         if (FAILED(isVertexBufferCreated)) {
             std::cout << __FUNCTION__ << "failed. " << std::hex << isVertexBufferCreated << std::endl;
@@ -191,12 +192,16 @@ namespace object
         };
     }
 
-    void Object::CreateConstantBuffer()
+    template void Object::CreateConstantBuffer<VertexShaderConstantData>(
+        VertexShaderConstantData& constantData, ComPtr<ID3D11Buffer>& constantBuffer);
+
+    template <typename T>
+    void Object::CreateConstantBuffer(T& constantData, ComPtr<ID3D11Buffer>& constantBuffer)
     {
         D3D11_BUFFER_DESC constantBufferDesc;
         ZeroMemory(&constantBufferDesc, sizeof(D3D11_BUFFER_DESC));
         constantBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-        constantBufferDesc.ByteWidth = sizeof(m_vertexShaderConstantData);
+        constantBufferDesc.ByteWidth = sizeof(constantData);
         constantBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
         constantBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
         constantBufferDesc.MiscFlags = 0;
@@ -207,7 +212,8 @@ namespace object
         constantBufferSubresource.pSysMem = &constantBufferDesc;
 
         const HRESULT isConstantxBufferCreated =
-            WindowManager::GetInstance()->GetDevice()->CreateBuffer(&constantBufferDesc, &constantBufferSubresource, m_vertexShaderConstantBuffer.GetAddressOf());
+            WindowManager::GetInstance()->GetDevice()->CreateBuffer(
+                &constantBufferDesc, &constantBufferSubresource, constantBuffer.GetAddressOf());
 
         if (FAILED(isConstantxBufferCreated)) {
             std::cout << __FUNCTION__ << "failed. " << std::hex << isConstantxBufferCreated << std::endl;

@@ -49,7 +49,8 @@ namespace object
 	private:
 		void CreateVertexBuffer();
 		void CreateIndiceBuffer();
-		void CreateConstantBuffer();
+		template <typename T>
+		void CreateConstantBuffer(T& constantData, ComPtr<ID3D11Buffer>& constantBuffer);
 		template <typename T>
 		void UpdateConstantBuffer(T& constantData, ComPtr<ID3D11Buffer>& constantBuffer);
 		
