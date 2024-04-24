@@ -7,7 +7,7 @@
 
 using namespace Microsoft::WRL;
 
-struct ConstantData
+struct VertexShaderConstantData
 {
 	Matrix model;
 	Matrix view;
@@ -35,13 +35,13 @@ namespace object
 		void SetTranslation(Vector3 translation);
 		void SetRotation(Vector3 rotation);
 		void SetScale(Vector3 scale);
-		ConstantData GetConstantData();
-		void SetConstantData(ConstantData constantData);
+		VertexShaderConstantData GetVertexShaderConstantData();
+		void SetVertexShaderConstantData(VertexShaderConstantData vertexShaderConstantData);
 
 		ComPtr<ID3D11Buffer> GetVertexBuffer();
 		ComPtr<ID3D11Buffer> GetIndexBuffer();
-		ComPtr<ID3D11Buffer> GetConstantBuffer();
-
+		ComPtr<ID3D11Buffer> GetVertexShaderConstantBuffer();
+		
 		ComPtr<ID3D11VertexShader> GetVertexShader();
 		ComPtr<ID3D11InputLayout> GetInputLayout();
 		ComPtr<ID3D11PixelShader> GetPixelShader();
@@ -50,7 +50,9 @@ namespace object
 		void CreateVertexBuffer();
 		void CreateIndiceBuffer();
 		void CreateConstantBuffer();
-
+		template <typename T>
+		void UpdateConstantBuffer(T& constantData, ComPtr<ID3D11Buffer>& constantBuffer);
+		
 		void CreateVertexShader();
 		void CreatePixelShader();
 
@@ -60,11 +62,11 @@ namespace object
 		Vector3 m_translation = Vector3(0.0f);
 		Vector3 m_rotation = Vector3(0.0f);
 		Vector3 m_scale = Vector3(1.0f);
-		ConstantData m_constantData = {};
+		VertexShaderConstantData m_vertexShaderConstantData = {};
 
 		ComPtr<ID3D11Buffer> m_vertexBuffer;
 		ComPtr<ID3D11Buffer> m_indexBuffer;
-		ComPtr<ID3D11Buffer> m_constantBuffer;
+		ComPtr<ID3D11Buffer> m_vertexShaderConstantBuffer;
 
 		LPCWSTR m_vertexShaderFile;
 		LPCWSTR m_pixelShaderFile;

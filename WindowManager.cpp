@@ -60,3 +60,8 @@ ComPtr<ID3D11Device> WindowManager::GetDevice()
 {
     return m_mainWindowView->GetDevice();
 }
+
+ComPtr<ID3D11DeviceContext> WindowManager::GetDeviceContext()
+{
+    return m_mainWindowView->GetDeviceContext();
+}

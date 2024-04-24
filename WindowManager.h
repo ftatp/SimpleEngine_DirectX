@@ -37,6 +37,7 @@ public:
     void RunWindow();
 
     ComPtr<ID3D11Device> GetDevice();
+    ComPtr<ID3D11DeviceContext> GetDeviceContext();
 
 private:
     static WindowManager* m_instancePtr;

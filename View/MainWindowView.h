@@ -30,8 +30,8 @@ namespace view
 		~MainWindowView();
 
 		void InitWindowApiProperties();
-		void UpdateScene();
 		void RenderImGui();
+		void UpdateScene();
 		void RenderScene();
 
 		HWND GetWindow();

@@ -18,9 +18,9 @@ namespace object
         m_rotation = Vector3(0.0f);
         m_scale = Vector3(1.0f, 1.0f, 1.0f);
 
-        m_constantData.model = Matrix();
-        m_constantData.view = Matrix();
-        m_constantData.projection = Matrix();
+        m_vertexShaderConstantData.model = Matrix();
+        m_vertexShaderConstantData.view = Matrix();
+        m_vertexShaderConstantData.projection = Matrix();
 
         m_vertexShaderFile = L"ShaderCollection/VertexShader.hlsl";
         m_pixelShaderFile = L"ShaderCollection/PixelShader.hlsl";
@@ -100,14 +100,15 @@ namespace object
         m_scale = scale;
     } 
 
-    ConstantData Object::GetConstantData()
+    VertexShaderConstantData Object::GetVertexShaderConstantData()
     {
-        return m_constantData;
+        return m_vertexShaderConstantData;
     }
 
-    void Object::SetConstantData(ConstantData constantData)
+    void Object::SetVertexShaderConstantData(VertexShaderConstantData vertexShaderConstantData)
     {
-        m_constantData = constantData;
+        m_vertexShaderConstantData = vertexShaderConstantData;
+        UpdateConstantBuffer(m_vertexShaderConstantData, m_vertexShaderConstantBuffer);
     }
 
     ComPtr<ID3D11Buffer> Object::GetVertexBuffer()
@@ -120,9 +121,9 @@ namespace object
         return m_indexBuffer;
     }
     
-    ComPtr<ID3D11Buffer> Object::GetConstantBuffer()
+    ComPtr<ID3D11Buffer> Object::GetVertexShaderConstantBuffer()
     {
-        return m_constantBuffer;
+        return m_vertexShaderConstantBuffer;
     }
     
     ComPtr<ID3D11VertexShader> Object::GetVertexShader()
@@ -140,6 +141,10 @@ namespace object
         return m_pixelShader;
     }
 
+
+
+
+    // Private =================================================================================
     void Object::CreateVertexBuffer()
     {
         D3D11_BUFFER_DESC vertexBufferDesc;
@@ -191,7 +196,7 @@ namespace object
         D3D11_BUFFER_DESC constantBufferDesc;
         ZeroMemory(&constantBufferDesc, sizeof(D3D11_BUFFER_DESC));
         constantBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-        constantBufferDesc.ByteWidth = sizeof(m_constantData);
+        constantBufferDesc.ByteWidth = sizeof(m_vertexShaderConstantData);
         constantBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
         constantBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
         constantBufferDesc.MiscFlags = 0;
@@ -202,11 +207,24 @@ namespace object
         constantBufferSubresource.pSysMem = &constantBufferDesc;
 
         const HRESULT isConstantxBufferCreated =
-            WindowManager::GetInstance()->GetDevice()->CreateBuffer(&constantBufferDesc, &constantBufferSubresource, m_constantBuffer.GetAddressOf());
+            WindowManager::GetInstance()->GetDevice()->CreateBuffer(&constantBufferDesc, &constantBufferSubresource, m_vertexShaderConstantBuffer.GetAddressOf());
 
         if (FAILED(isConstantxBufferCreated)) {
             std::cout << __FUNCTION__ << "failed. " << std::hex << isConstantxBufferCreated << std::endl;
         };
+    }
+
+    template void Object::UpdateConstantBuffer<VertexShaderConstantData>(
+        VertexShaderConstantData&, Microsoft::WRL::ComPtr<ID3D11Buffer>&);
+
+    template <typename T>
+    void Object::UpdateConstantBuffer(T& constantData, ComPtr<ID3D11Buffer>& constantBuffer)
+    {
+        D3D11_MAPPED_SUBRESOURCE ms;
+        WindowManager::GetInstance()->GetDeviceContext()->Map(
+            constantBuffer.Get(), NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
+        memcpy(ms.pData, &constantData, sizeof(constantData));
+        WindowManager::GetInstance()->GetDeviceContext()->Unmap(constantBuffer.Get(), NULL);
     }
 
     void Object::CreateVertexShader()

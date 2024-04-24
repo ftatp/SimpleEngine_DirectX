@@ -5,40 +5,40 @@
 #include <string>
 
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
     {
-        if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
-        {
-            return true;
-        }
-
-        switch (msg)
-        {
-        case WM_SIZE:
-
-            return 0;
-        case WM_SYSCOMMAND:
-            if ((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
-                return 0;
-            break;
-        case WM_MOUSEMOVE:
-            std::cout << "Mouse " << LOWORD(lParam) << " " << HIWORD(lParam) << std::endl;
-            break;
-        case WM_LBUTTONUP:
-            std::cout << "Up\tLeft mouse button" << std::endl;
-            break;
-        case WM_RBUTTONUP:
-            std::cout << "Up\tRight mouse button" << std::endl;
-            break;
-        case WM_KEYDOWN:
-            std::cout << "KEYDOWN\t" << (int)wParam << std::endl;
-            break;
-        case WM_DESTROY:
-            PostQuitMessage(0);
-            return 0;
-        }
-
-        return DefWindowProc(hWnd, msg, wParam, lParam);
+        return true;
     }
+
+    switch (msg)
+    {
+    case WM_SIZE:
+
+        return 0;
+    case WM_SYSCOMMAND:
+        if ((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
+            return 0;
+        break;
+    case WM_MOUSEMOVE:
+        std::cout << "Mouse " << LOWORD(lParam) << " " << HIWORD(lParam) << std::endl;
+        break;
+    case WM_LBUTTONUP:
+        std::cout << "Up\tLeft mouse button" << std::endl;
+        break;
+    case WM_RBUTTONUP:
+        std::cout << "Up\tRight mouse button" << std::endl;
+        break;
+    case WM_KEYDOWN:
+        std::cout << "KEYDOWN\t" << (int)wParam << std::endl;
+        break;
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        return 0;
+    }
+
+    return DefWindowProc(hWnd, msg, wParam, lParam);
+}
 
 namespace view
 {
@@ -88,30 +88,7 @@ namespace view
         InitWindowD3D11();
         InitWindowImGui();
     }
-
-    void MainWindowView::UpdateScene()
-    {
-        auto objects = SceneManager::GetInstance()->GetCurrentScene()->GetObjectList();
-
-        for (int i = 0; i < objects.size(); i++)
-        {
-            ConstantData constantData = {};
-
-            constantData.model = objects[i]->GetModelTransform();
-            constantData.model = constantData.model.Transpose();
-
-            constantData.view = DirectX::XMMatrixLookToLH({ 0.0f, 0.0f, -2.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f });
-            constantData.view = constantData.view.Transpose();
-
-            constantData.projection = DirectX::XMMatrixPerspectiveFovLH(
-                DirectX::XMConvertToRadians(70.0f), float(m_windowWidth) / m_windowHeight, 0.5f, 100.0f);
-
-            constantData.projection = constantData.projection.Transpose();
-
-            objects[i]->SetConstantData(constantData);
-        }
-    }
-
+    
     void MainWindowView::RenderImGui()
     {
         ImGui::Begin("Hello, ImGui!");
@@ -127,14 +104,43 @@ namespace view
         {
             auto object = objects[i];
             ImGui::BeginGroup();
-            ImGui::SliderFloat3(("Translation" + std::to_string(i)).data(), &(objects[i]->GetTranslationPtr()->x), -2.0f, 2.0f);
-            ImGui::SliderFloat3(("Rotation" + std::to_string(i)).data(), &(objects[i]->GetRotationPtr()->x), -2.0f, 2.0f);
-            ImGui::SliderFloat3(("Scale" + std::to_string(i)).data(), &(objects[i]->GetScalePtr()->x), -2.0f, 2.0f);
+            ImGui::SliderFloat3(("Translation" + std::to_string(i)).data(),
+                &(objects[i]->GetTranslationPtr()->x), -2.0f, 2.0f);
+            ImGui::SliderFloat3(("Rotation" + std::to_string(i)).data(),
+                &(objects[i]->GetRotationPtr()->x), -2.0f, 2.0f);
+            ImGui::SliderFloat3(("Scale" + std::to_string(i)).data(),
+                &(objects[i]->GetScalePtr()->x), -2.0f, 2.0f);
             ImGui::EndGroup();
         }
 
         ImGui::End();
         ImGui::Render();
+    }
+
+    void MainWindowView::UpdateScene()
+    {
+        auto objects = SceneManager::GetInstance()->GetCurrentScene()->GetObjectList();
+
+        for (int i = 0; i < objects.size(); i++)
+        {
+            VertexShaderConstantData constantData = {};
+
+            constantData.model = objects[i]->GetModelTransform();
+            constantData.model = constantData.model.Transpose();
+
+            // ============================================================================
+            // TODO : Must be decided by Camera
+            constantData.view = DirectX::XMMatrixLookToLH(
+                { 0.0f, 0.0f, -2.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f });
+            constantData.view = constantData.view.Transpose();
+
+            constantData.projection = DirectX::XMMatrixPerspectiveFovLH(
+                DirectX::XMConvertToRadians(70.0f), float(m_windowWidth) / m_windowHeight, 0.5f, 100.0f);
+
+            constantData.projection = constantData.projection.Transpose();
+            // ============================================================================
+            objects[i]->SetVertexShaderConstantData(constantData);
+        }
     }
 
     void MainWindowView::RenderScene()
@@ -159,24 +165,18 @@ namespace view
             auto inputLayout = objects[i]->GetInputLayout();
             auto indexBuffer = objects[i]->GetIndexBuffer();
             auto vertexShader = objects[i]->GetVertexShader();
-            auto constantBuffer = objects[i]->GetConstantBuffer();
+            auto vertexShaderConstantBuffer = objects[i]->GetVertexShaderConstantBuffer();
             auto pixelShader = objects[i]->GetPixelShader();
-
-            auto constantData = objects[i]->GetConstantData();
 
             UINT stride = sizeof(object::Vertex);
             UINT offset = 0;
-            D3D11_MAPPED_SUBRESOURCE ms;
-            m_deviceContext->Map(constantBuffer.Get(), NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);
-            memcpy(ms.pData, &constantData, sizeof(constantData));
-            m_deviceContext->Unmap(constantBuffer.Get(), NULL);
 
             m_deviceContext->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
             m_deviceContext->IASetInputLayout(inputLayout.Get());
             m_deviceContext->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
 
             m_deviceContext->VSSetShader(vertexShader.Get(), 0, 0);
-            m_deviceContext->VSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
+            m_deviceContext->VSSetConstantBuffers(0, 1, vertexShaderConstantBuffer.GetAddressOf());
             m_deviceContext->PSSetShader(pixelShader.Get(), 0, 0);
 
             m_deviceContext->DrawIndexed(objects[i]->GetMesh()->GetIndices().size(), 0, 0);
@@ -188,10 +188,7 @@ namespace view
 
 
 
-
-
-
-
+    // Get Set =========================================================================================
 
     HWND MainWindowView::GetWindow()
     {
@@ -217,6 +214,9 @@ namespace view
     {
         return m_deviceContext;
     }
+
+
+    // Private ========================================================================================
 
     void MainWindowView::InitWindowD3D11()
     {
