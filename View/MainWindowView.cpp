@@ -1,5 +1,5 @@
 #include "MainWindowView.h"
-#include "../SceneManager.h"
+#include "../Scene/SceneManager.h"
 
 #include <iostream>
 #include <string>
@@ -110,6 +110,9 @@ namespace view
                 &(objects[i]->GetRotationPtr()->x), -2.0f, 2.0f);
             ImGui::SliderFloat3(("Scale" + std::to_string(i)).data(),
                 &(objects[i]->GetScalePtr()->x), -2.0f, 2.0f);
+            ImGui::SliderFloat3(("Ambient" + std::to_string(i)).data(),
+                &(objects[i]->GetMaterial()->GetAmbientPtr()->x), -2.0f, 2.0f);
+            
             ImGui::EndGroup();
         }
 

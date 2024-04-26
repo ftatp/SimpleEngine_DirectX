@@ -1,6 +1,6 @@
 #pragma once
 
-#include "View/MainWindowView.h"
+#include "MainWindowView.h"
 
 #include <memory>
 

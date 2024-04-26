@@ -10,15 +10,15 @@ SceneManager::~SceneManager()
 {
 }
 
-shared_ptr<Scene> SceneManager::MakeScene()
+shared_ptr<scene::Scene> SceneManager::MakeScene()
 {
-	m_currentScene = make_shared<Scene>();
+	m_currentScene = make_shared<scene::Scene>();
 	m_sceneList.push_back(m_currentScene);
 
 	return m_currentScene;
 }
 
-shared_ptr<Scene> SceneManager::GetCurrentScene()
+shared_ptr<scene::Scene> SceneManager::GetCurrentScene()
 {
 	return m_currentScene;
 }

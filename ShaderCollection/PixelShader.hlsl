@@ -26,9 +26,7 @@ struct PixelShaderInput
 
 float4 main(PixelShaderInput input) : SV_TARGET
 {
-
     // Use the interpolated vertex color
     return float4(material.ambient, 1.0);
     //return float4(input.color, 1.0);
-
 }

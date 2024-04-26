@@ -11,13 +11,13 @@ namespace object
 		Material();
 		~Material();
 
-		Vector3 GetAmbient();
+		Vector3* GetAmbientPtr();
 		void SetAmbient(Vector3 ambient);
-		Vector3 GetDiffuse();
+		Vector3* GetDiffusePtr();
 		void SetDiffuse(Vector3 diffuse);
-		Vector3 GetSpecular();
+		Vector3* GetSpecularPtr();
 		void SetSpecular(Vector3 specular);
-		float GetShininess();
+		float* GetShininessPtr();
 		void SetShininess(float shininess);
 
 	private:

@@ -142,27 +142,27 @@
   <ItemGroup>
     <ClCompile Include="EventSystem\Event.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Object\Material.cpp" />
-    <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="ViewController.cpp" />
+    <ClCompile Include="Scene\Object\Material.cpp" />
+    <ClCompile Include="Scene\Scene.cpp" />
+    <ClCompile Include="View\ViewController.cpp" />
     <ClCompile Include="View\MainWindowView.cpp" />
     <ClCompile Include="WindowManager.cpp" />
-    <ClCompile Include="SceneManager.cpp" />
-    <ClCompile Include="Object\GeometryConstructor.cpp" />
-    <ClCompile Include="Object\Mesh.cpp" />
-    <ClCompile Include="Object\Object.cpp" />
+    <ClCompile Include="Scene\SceneManager.cpp" />
+    <ClCompile Include="Scene\Object\GeometryConstructor.cpp" />
+    <ClCompile Include="Scene\Object\Mesh.cpp" />
+    <ClCompile Include="Scene\Object\Object.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EventSystem\Event.h" />
-    <ClInclude Include="Object\Material.h" />
-    <ClInclude Include="Scene.h" />
-    <ClInclude Include="ViewController.h" />
+    <ClInclude Include="Scene\Object\Material.h" />
+    <ClInclude Include="Scene\Scene.h" />
+    <ClInclude Include="View\ViewController.h" />
     <ClInclude Include="View\MainWindowView.h" />
     <ClInclude Include="WindowManager.h" />
-    <ClInclude Include="SceneManager.h" />
-    <ClInclude Include="Object\GeometryConstructor.h" />
-    <ClInclude Include="Object\Mesh.h" />
-    <ClInclude Include="Object\Object.h" />
+    <ClInclude Include="Scene\SceneManager.h" />
+    <ClInclude Include="Scene\Object\GeometryConstructor.h" />
+    <ClInclude Include="Scene\Object\Mesh.h" />
+    <ClInclude Include="Scene\Object\Object.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ShaderCollection\PixelShader.hlsl">

@@ -1,5 +1,5 @@
 #include "Object.h"
-#include "../WindowManager.h"
+#include "../../WindowManager.h"
 
 #include <iostream>
 
@@ -50,6 +50,16 @@ namespace object
         CreateVertexBuffer();
         CreateIndiceBuffer();
 	}
+
+    shared_ptr<Material> Object::GetMaterial()
+    {
+        return m_material;
+    }
+
+    void Object::SetMaterial(shared_ptr<Material> material)
+    {
+        m_material = material;
+    }
 
     void Object::SetVertexShader(LPCWSTR vertexShaderFile)
     {

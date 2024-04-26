@@ -13,12 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="소스 파일\Object">
-      <UniqueIdentifier>{679351ed-31c2-4f21-80d7-24aef89eeba8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="헤더 파일\Object">
-      <UniqueIdentifier>{480655f4-d7e7-47d7-87f5-5bae7ca33a4b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\View">
       <UniqueIdentifier>{40683e1c-7baf-489c-af9e-c33970062952}</UniqueIdentifier>
     </Filter>
@@ -34,6 +28,18 @@
     <Filter Include="ShaderCollection">
       <UniqueIdentifier>{4f7b4d02-5045-4b2a-847f-126333006636}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Scene">
+      <UniqueIdentifier>{6d190a1b-b03e-452a-af52-e30a2468d7bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Scene\Object">
+      <UniqueIdentifier>{679351ed-31c2-4f21-80d7-24aef89eeba8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Scene">
+      <UniqueIdentifier>{7148771d-1b2d-49df-8870-8d13c70b8e56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Scene\Object">
+      <UniqueIdentifier>{480655f4-d7e7-47d7-87f5-5bae7ca33a4b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -42,17 +48,14 @@
     <ClCompile Include="WindowManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Object\Mesh.cpp">
-      <Filter>소스 파일\Object</Filter>
+    <ClCompile Include="Scene\Object\Mesh.cpp">
+      <Filter>소스 파일\Scene\Object</Filter>
     </ClCompile>
-    <ClCompile Include="Object\Object.cpp">
-      <Filter>소스 파일\Object</Filter>
+    <ClCompile Include="Scene\Object\Object.cpp">
+      <Filter>소스 파일\Scene\Object</Filter>
     </ClCompile>
-    <ClCompile Include="SceneManager.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Object\GeometryConstructor.cpp">
-      <Filter>소스 파일\Object</Filter>
+    <ClCompile Include="Scene\Object\GeometryConstructor.cpp">
+      <Filter>소스 파일\Scene\Object</Filter>
     </ClCompile>
     <ClCompile Include="View\MainWindowView.cpp">
       <Filter>소스 파일\View</Filter>
@@ -60,31 +63,31 @@
     <ClCompile Include="EventSystem\Event.cpp">
       <Filter>소스 파일\EventSystem</Filter>
     </ClCompile>
-    <ClCompile Include="ViewController.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="Scene\Object\Material.cpp">
+      <Filter>소스 파일\Scene\Object</Filter>
     </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="Scene\Scene.cpp">
+      <Filter>소스 파일\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Object\Material.cpp">
-      <Filter>소스 파일\Object</Filter>
+    <ClCompile Include="Scene\SceneManager.cpp">
+      <Filter>소스 파일\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="View\ViewController.cpp">
+      <Filter>소스 파일\View</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WindowManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Object\Object.h">
-      <Filter>헤더 파일\Object</Filter>
+    <ClInclude Include="Scene\Object\Object.h">
+      <Filter>헤더 파일\Scene\Object</Filter>
     </ClInclude>
-    <ClInclude Include="Object\Mesh.h">
-      <Filter>헤더 파일\Object</Filter>
+    <ClInclude Include="Scene\Object\Mesh.h">
+      <Filter>헤더 파일\Scene\Object</Filter>
     </ClInclude>
-    <ClInclude Include="SceneManager.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Object\GeometryConstructor.h">
-      <Filter>헤더 파일\Object</Filter>
+    <ClInclude Include="Scene\Object\GeometryConstructor.h">
+      <Filter>헤더 파일\Scene\Object</Filter>
     </ClInclude>
     <ClInclude Include="View\MainWindowView.h">
       <Filter>헤더 파일\View</Filter>
@@ -92,14 +95,17 @@
     <ClInclude Include="EventSystem\Event.h">
       <Filter>헤더 파일\EventSystem</Filter>
     </ClInclude>
-    <ClInclude Include="ViewController.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="Scene\Object\Material.h">
+      <Filter>헤더 파일\Scene\Object</Filter>
     </ClInclude>
-    <ClInclude Include="Scene.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="Scene\Scene.h">
+      <Filter>헤더 파일\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Object\Material.h">
-      <Filter>헤더 파일\Object</Filter>
+    <ClInclude Include="Scene\SceneManager.h">
+      <Filter>헤더 파일\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="View\ViewController.h">
+      <Filter>헤더 파일\View</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

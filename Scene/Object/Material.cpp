@@ -13,9 +13,9 @@ namespace object
 	}
 
 
-	Vector3 Material::GetAmbient()
+	Vector3* Material::GetAmbientPtr()
 	{
-		return m_ambient;
+		return &m_ambient;
 	}
 	
 	void Material::SetAmbient(Vector3 ambient)
@@ -23,9 +23,9 @@ namespace object
 		m_ambient = ambient;
 	}
 	
-	Vector3 Material::GetDiffuse()
+	Vector3* Material::GetDiffusePtr()
 	{
-		return m_diffuse;
+		return &m_diffuse;
 	}
 	
 	void Material::SetDiffuse(Vector3 diffuse)
@@ -33,9 +33,9 @@ namespace object
 		m_diffuse = diffuse;
 	}
 	
-	Vector3 Material::GetSpecular()
+	Vector3* Material::GetSpecularPtr()
 	{
-		return m_specular;
+		return &m_specular;
 	}
 	
 	void Material::SetSpecular(Vector3 specular)
@@ -43,9 +43,9 @@ namespace object
 		m_specular = specular;
 	}
 	
-	float Material::GetShininess()
+	float* Material::GetShininessPtr()
 	{
-		return m_shininess;
+		return &m_shininess;
 	}
 	
 	void Material::SetShininess(float shininess)

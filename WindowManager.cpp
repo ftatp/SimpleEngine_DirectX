@@ -1,7 +1,7 @@
 #include "WindowManager.h"
-#include "ViewController.h"
+#include "View/ViewController.h"
 
-#include "Object/GeometryConstructor.h"
+#include "Scene/Object/GeometryConstructor.h"
 
 #include <iostream>
 

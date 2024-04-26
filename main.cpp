@@ -1,5 +1,5 @@
 #include "WindowManager.h"
-#include "SceneManager.h"
+#include "Scene/SceneManager.h"
 
 #include <iostream>
 
