@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-//using namespace scene;
+using namespace scene;
 
 class SceneManager
 {
@@ -22,13 +22,13 @@ public:
 	SceneManager();
 	~SceneManager();
 
-	shared_ptr<scene::Scene> MakeScene();
-	shared_ptr<scene::Scene> GetCurrentScene();
+	shared_ptr<Scene> MakeScene();
+	shared_ptr<Scene> GetCurrentScene();
 
 private:
 	static SceneManager* m_instancePtr;
 
-	shared_ptr<scene::Scene> m_currentScene;
-	vector<shared_ptr<scene::Scene>> m_sceneList;
+	shared_ptr<Scene> m_currentScene;
+	vector<shared_ptr<Scene>> m_sceneList;
 };
 

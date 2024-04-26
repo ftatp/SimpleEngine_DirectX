@@ -16,6 +16,7 @@
 #include <vector>
 
 using namespace Microsoft::WRL;
+using namespace view;
 
 class WindowManager
 {
@@ -43,5 +44,5 @@ private:
     static WindowManager* m_instancePtr;
 	WindowManager& operator=(const WindowManager&) = delete;
 
-    shared_ptr<view::MainWindowView> m_mainWindowView;
+    shared_ptr<MainWindowView> m_mainWindowView;
 };
